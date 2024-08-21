@@ -37,7 +37,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Todo App</h1>
+      <h1 className="text-2xl font-bold mb-4">メモアプリ</h1>
       <div className="mb-4">
         <input
           type="text"
@@ -48,7 +48,7 @@ export default function Home() {
         <button
           onClick={addTodo}
           className="bg-blue-500 text-white p-2 rounded">
-          Add Todo
+          追加する
         </button>
       </div>
       <ul>
@@ -64,7 +64,7 @@ export default function Home() {
             <button
               onClick={() => deleteTodo(todo.id)}
               className="bg-red-500 text-white p-1 ml-2 rounded">
-              Delete
+              消す
             </button>
           </li>
         ))}
