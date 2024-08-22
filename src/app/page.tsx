@@ -16,7 +16,7 @@ export default function Home() {
 
   // メモを追加する関数
   //入力フィールドが空でない場合、新しいメモオブジェクトを作成し、現在のメモリストに追加します。その後、入力フィールドをクリアします。
-  const addTodo = () => {
+  function addTodo() {
     if (input.trim() === "") return;
     const newTodo: Todo = {
       id: Date.now(),
@@ -25,22 +25,22 @@ export default function Home() {
     };
     setTodos([...todos, newTodo]);
     setInput("");
-  };
+  }
 
   // メモの完了状態を切り替えるための関数です。
   // 指定されたIDを持つメモを見つけ、そのcompletedプロパティを反転させます。
-  const toggleTodo = (id: number) => {
+  function toggleTodo(id: number) {
     setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
-  };
+  }
   // 指定されたIDを持つメモをリストから削除するための関数です。
   // フィルタリングを使用して、指定されたID以外のメモだけを残します。
-  const deleteTodo = (id: number) => {
+  function deleteTodo(id: number) {
     setTodos(todos.filter((todo) => todo.id !== id));
-  };
+  }
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
