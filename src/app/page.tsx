@@ -1,5 +1,6 @@
 "use client";
 
+// todo 完了をチェックボタンで切り替えられるようにする（チェックボタンを押すと、四角いボタンにチェックがつき、リストの文字が取り消し線になる）
 import { useState } from "react";
 
 interface Todo {
@@ -9,9 +10,12 @@ interface Todo {
 }
 
 export default function Home() {
+  // メモのリスト（todos）と入力フィールドの値（input）を管理している
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
 
+  // メモを追加する関数
+  //入力フィールドが空でない場合、新しいメモオブジェクトを作成し、現在のメモリストに追加します。その後、入力フィールドをクリアします。
   const addTodo = () => {
     if (input.trim() === "") return;
     const newTodo: Todo = {
@@ -23,6 +27,8 @@ export default function Home() {
     setInput("");
   };
 
+  // メモの完了状態を切り替えるための関数です。
+  // 指定されたIDを持つメモを見つけ、そのcompletedプロパティを反転させます。
   const toggleTodo = (id: number) => {
     setTodos(
       todos.map((todo) =>
@@ -30,7 +36,8 @@ export default function Home() {
       )
     );
   };
-
+  // 指定されたIDを持つメモをリストから削除するための関数です。
+  // フィルタリングを使用して、指定されたID以外のメモだけを残します。
   const deleteTodo = (id: number) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
@@ -54,13 +61,19 @@ export default function Home() {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id} className="mb-2">
-            <span
-              onClick={() => toggleTodo(todo.id)}
+            <input
+              type="checkbox"
+              name=""
+              id=""
+              className="m-2"
+              onChange={() => toggleTodo(todo.id)}
+            />
+            <label
               className={`cursor-pointer ${
-                todo.completed ? "line-through" : ""
+                todo.completed ? "line-through text-gray-400" : ""
               }`}>
               {todo.text}
-            </span>
+            </label>
             <button
               onClick={() => deleteTodo(todo.id)}
               className="bg-red-500 text-white p-1 ml-2 rounded">
