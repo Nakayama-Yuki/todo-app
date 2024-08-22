@@ -2,8 +2,9 @@
 
 // todo 完了をチェックボタンで切り替えられるようにする（チェックボタンを押すと、四角いボタンにチェックがつき、リストの文字が取り消し線になる）
 import { useState } from "react";
+import AddTask from "@/components/AddTask";
 
-interface Todo {
+export interface Todo {
   id: number;
   text: string;
   completed: boolean;
@@ -45,19 +46,7 @@ export default function Home() {
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">メモアプリ</h1>
-      <div className="mb-4">
-        <input
-          type="text"
-          className="border rounded p-2 mr-2 w-80"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button
-          onClick={addTodo}
-          className="bg-blue-500 text-white p-2 rounded">
-          追加する
-        </button>
-      </div>
+      <AddTask input={input} setInput={setInput} addTodo={addTodo} />
       <ul>
         {todos.map((todo) => (
           <li key={todo.id} className="mb-2">
