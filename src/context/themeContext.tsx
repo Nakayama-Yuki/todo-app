@@ -12,9 +12,12 @@ export interface ThemeContextType {
 
 /*
  * ThemeContext は、テーマの状態とテーマを切り替える関数を提供するコンテキストです。
- * デフォルト値は undefined です。
+ * デフォルト値は "light" です。
  */
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextType | undefined>({
+  theme: "light",
+  toggleTheme: () => {},
+});
 
 /*
  * ThemeProvider コンポーネントは、テーマの状態を管理し、子コンポーネントにテーマの状態と
