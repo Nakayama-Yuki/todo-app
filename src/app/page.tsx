@@ -1,9 +1,9 @@
 "use client";
 
-// todo 完了をチェックボタンで切り替えられるようにする（チェックボタンを押すと、四角いボタンにチェックがつき、リストの文字が取り消し線になる）
 import { useState } from "react";
 import AddTask from "@/components/AddTask";
 import TaskList from "@/components/TaskList";
+import { useTheme } from "@/context/themeContext";
 
 export interface Todo {
   id: number;
@@ -15,6 +15,7 @@ export default function Home() {
   // メモのリスト（todos）と入力フィールドの値（input）を管理している
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
+  const { theme, toggleTheme } = useTheme();
 
   // メモを追加する関数
   //入力フィールドが空でない場合、新しいメモオブジェクトを作成し、現在のメモリストに追加します。その後、入力フィールドをクリアします。
@@ -45,10 +46,18 @@ export default function Home() {
   }
 
   return (
-    <div className="container mx-auto p-4 bg-white min-h-screen">
+    <div
+      className={`container mx-auto p-4 min-h-screen ${
+        theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
+      }`}>
       <h1 className="text-2xl font-bold mb-4">メモアプリ</h1>
       <AddTask input={input} setInput={setInput} addTodo={addTodo} />
       <TaskList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
+      <button
+        onClick={toggleTheme}
+        className="mb-4 p-2 bg-blue-500 text-white rounded">
+        テーマを切り替える
+      </button>
     </div>
   );
 }

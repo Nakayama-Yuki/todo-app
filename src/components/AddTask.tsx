@@ -1,4 +1,5 @@
 import React from "react";
+import { useTheme } from "@/context/themeContext";
 
 interface AddTaskProps {
   input: string;
@@ -7,11 +8,15 @@ interface AddTaskProps {
 }
 
 const AddTask: React.FC<AddTaskProps> = ({ input, setInput, addTodo }) => {
+  const { theme } = useTheme();
+
   return (
     <div className="mb-4">
       <input
         type="text"
-        className="border rounded p-2 mr-2 w-80"
+        className={`border rounded p-2 mr-2 w-80 ${
+          theme === "dark" ? "text-black" : "text-black"
+        }`}
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
