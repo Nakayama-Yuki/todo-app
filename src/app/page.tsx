@@ -13,7 +13,11 @@ export interface Todo {
 
 export default function Home() {
   // メモのリスト（todos）と入力フィールドの値（input）を管理している
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState([
+    { id: 1, text: "買い物をする", completed: false },
+    { id: 2, text: "風呂掃除をする", completed: false },
+    { id: 3, text: "犬と散歩", completed: false },
+  ]);
   const [input, setInput] = useState("");
   const { theme, toggleTheme } = useTheme();
 
