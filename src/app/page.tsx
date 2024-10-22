@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AddTask from "@/components/AddTask";
 import TaskList from "@/components/TaskList";
 import { useTheme } from "@/context/themeContext";
@@ -20,19 +20,6 @@ export default function Home() {
   ]);
   const [input, setInput] = useState("");
   const { theme, toggleTheme } = useTheme();
-
-  useEffect(() => {
-    // コンポーネントのマウント時にローカルストレージからメモを読み込む
-    const storedTodos = localStorage.getItem("todos");
-    if (storedTodos) {
-      setTodos(JSON.parse(storedTodos));
-    }
-  }, []);
-
-  useEffect(() => {
-    // todosが変更されるたびにローカルストレージにメモを保存する
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
 
   // メモを追加する関数
   //入力フィールドが空でない場合、新しいメモオブジェクトを作成し、現在のメモリストに追加します。その後、入力フィールドをクリアします。
