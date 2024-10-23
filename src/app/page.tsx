@@ -1,3 +1,5 @@
+// やること
+// tasklistの不要なjsx.emelentやimportを削除する
 "use client";
 
 import { useState } from "react";
@@ -43,10 +45,18 @@ export default function Home() {
       )
     );
   }
+
   // 指定されたIDを持つメモをリストから削除するための関数です。
   // フィルタリングを使用して、指定されたID以外のメモだけを残します。
   function deleteTodo(id: number) {
     setTodos(todos.filter((todo) => todo.id !== id));
+  }
+
+  // 追加: Todoの内容を更新する関数
+  function updateTodo(id: number, newText: string) {
+    setTodos(
+      todos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo))
+    );
   }
 
   return (
@@ -56,7 +66,12 @@ export default function Home() {
       }`}>
       <h1 className="text-2xl font-bold mb-4">メモアプリ</h1>
       <AddTask input={input} setInput={setInput} addTodo={addTodo} />
-      <TaskList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
+      <TaskList
+        todos={todos}
+        toggleTodo={toggleTodo}
+        deleteTodo={deleteTodo}
+        updateTodo={updateTodo}
+      />
       <button
         onClick={toggleTheme}
         className="mb-4 p-2 bg-blue-500 text-white rounded">
