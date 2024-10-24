@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Todo } from "@/app/page";
+import { useTheme } from "@/context/themeContext"; // 追加
 
 export interface TaskListProps {
   todos: Todo[];
@@ -16,6 +17,7 @@ export default function TaskList({
 }: TaskListProps) {
   const [editId, setEditId] = useState<number | null>(null);
   const [editText, setEditText] = useState<string>("");
+  const { theme } = useTheme(); // 追加
   //
   const handleEdit = (id: number, currentText: string) => {
     setEditId(id);
@@ -43,12 +45,18 @@ export default function TaskList({
               type="text"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="border rounded p-1"
+              className={`border rounded p-1 ${
+                theme === "dark" ? "text-black bg-white" : "text-gray-800"
+              }`}
             />
           ) : (
             <label
               className={`cursor-pointer ${
-                todo.completed ? "line-through text-gray-400" : ""
+                todo.completed
+                  ? "line-through text-gray-400"
+                  : theme === "dark"
+                  ? "text-white"
+                  : "text-black"
               }`}>
               {todo.text}
             </label>
