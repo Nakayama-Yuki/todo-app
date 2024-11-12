@@ -1,13 +1,6 @@
 import { useState } from "react";
-import { Todo } from "@/app/page";
+import { Todo, TaskListProps } from "@/types/type";
 import { useTheme } from "@/context/themeContext"; // 追加
-
-export interface TaskListProps {
-  todos: Todo[];
-  toggleTodo: (id: number) => void;
-  deleteTodo: (id: number) => void;
-  updateTodo: (id: number, newText: string) => void; // 追加
-}
 
 export default function TaskList({
   todos,

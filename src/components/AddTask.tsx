@@ -1,11 +1,6 @@
 import React from "react";
 import { useTheme } from "@/context/themeContext";
-
-interface AddTaskProps {
-  input: string;
-  setInput: (input: string) => void;
-  addTodo: () => void;
-}
+import { AddTaskProps } from "@/types/type";
 
 const AddTask: React.FC<AddTaskProps> = ({ input, setInput, addTodo }) => {
   const { theme } = useTheme();

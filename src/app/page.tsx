@@ -1,17 +1,10 @@
-// やること
-// tasklistの不要なjsx.emelentやimportを削除する
 "use client";
 
 import { useState } from "react";
 import AddTask from "@/components/AddTask";
 import TaskList from "@/components/TaskList";
 import { useTheme } from "@/context/themeContext";
-
-export interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+import { Todo } from "@/types/type";
 
 export default function Home() {
   // メモのリスト（todos）と入力フィールドの値（input）を管理している
@@ -36,7 +29,7 @@ export default function Home() {
     setInput("");
   }
 
-  // メモの完了状態を切り替えるための関数です。
+  // メモの完了状態を切り替えるための関数
   // 指定されたIDを持つメモを見つけ、そのcompletedプロパティを反転させます。
   function toggleTodo(id: number) {
     setTodos(
@@ -46,7 +39,7 @@ export default function Home() {
     );
   }
 
-  // 指定されたIDを持つメモをリストから削除するための関数です。
+  // 指定されたIDを持つメモをリストから削除するための関数
   // フィルタリングを使用して、指定されたID以外のメモだけを残します。
   function deleteTodo(id: number) {
     setTodos(todos.filter((todo) => todo.id !== id));
