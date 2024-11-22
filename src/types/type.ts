@@ -16,3 +16,7 @@ export interface AddTaskProps {
   setInput: (input: string) => void;
   addTodo: () => void;
 }
+
+export interface ChangeThemeProps {
+  toggleTheme: () => void;
+}

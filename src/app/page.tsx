@@ -3,6 +3,7 @@
 import { useState } from "react";
 import AddTask from "@/components/AddTask";
 import TaskList from "@/components/TaskList";
+import ChangeTheme from "@/components/ChangeTheme";
 import { useTheme } from "@/context/themeContext";
 import { Todo } from "@/types/type";
 
@@ -65,11 +66,7 @@ export default function Home() {
         deleteTodo={deleteTodo}
         updateTodo={updateTodo}
       />
-      <button
-        onClick={toggleTheme}
-        className="mb-4 p-2 bg-blue-500 text-white rounded">
-        テーマを切り替える
-      </button>
+      <ChangeTheme toggleTheme={toggleTheme} />
     </div>
   );
 }
