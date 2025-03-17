@@ -57,19 +57,19 @@ export default function TaskList({
           {editId === todo.id ? (
             <button
               onClick={() => handleSave(todo.id)}
-              className="bg-green-500 text-white p-1 ml-2 rounded">
+              className="bg-green-500 text-white p-1 ml-2 rounded-sm">
               保存する
             </button>
           ) : (
             <button
               onClick={() => handleEdit(todo.id, todo.text)}
-              className="bg-yellow-500 text-white p-1 ml-2 rounded">
+              className="bg-yellow-500 text-white p-1 ml-2 rounded-sm">
               編集
             </button>
           )}
           <button
             onClick={() => deleteTodo(todo.id)}
-            className="bg-red-500 text-white p-1 ml-2 rounded">
+            className="bg-red-500 text-white p-1 ml-2 rounded-sm">
             消す
           </button>
         </li>

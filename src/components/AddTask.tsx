@@ -15,7 +15,7 @@ const AddTask: React.FC<AddTaskProps> = ({ input, setInput, addTodo }) => {
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <button onClick={addTodo} className="bg-blue-500 text-white p-2 rounded">
+      <button onClick={addTodo} className="bg-blue-500 text-white p-2 rounded-sm">
         追加する
       </button>
     </div>
