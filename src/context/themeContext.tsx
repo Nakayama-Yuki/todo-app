@@ -37,8 +37,6 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
 
 // useTheme フックは、ThemeContext からテーマの状態とテーマを切り替える関数を取得します。
 // このフックは、ThemeProvider 内でのみ使用する必要があります。
-// @returns ThemeContextType - テーマの状態とテーマを切り替える関数
-// @throws エラー - ThemeProvider の外で使用された場合
 export function useTheme(): ThemeContextType {
   // コンテキストからテーマ情報を取得
   const context = useContext(ThemeContext);
