@@ -1,6 +1,6 @@
 import { ChangeThemeProps } from "@/types/type";
 
-const ChangeTheme: React.FC<ChangeThemeProps> = ({ toggleTheme }) => {
+export default function ChangeTheme({ toggleTheme }: ChangeThemeProps) {
   return (
     <button
       onClick={toggleTheme}
@@ -8,6 +8,4 @@ const ChangeTheme: React.FC<ChangeThemeProps> = ({ toggleTheme }) => {
       テーマを切り替える
     </button>
   );
-};
-
-export default ChangeTheme;
+}
