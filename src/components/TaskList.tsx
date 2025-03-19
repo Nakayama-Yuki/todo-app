@@ -11,17 +11,19 @@ export default function TaskList({
   const [editId, setEditId] = useState<number | null>(null);
   const [editText, setEditText] = useState<string>("");
   const { theme } = useTheme(); // 追加
-  //
-  const handleEdit = (id: number, currentText: string) => {
+
+  //　編集ボタンがクリックされたときの関数
+  function handleEdit(id: number, currentText: string) {
     setEditId(id);
     setEditText(currentText);
-  };
+  }
 
-  const handleSave = (id: number) => {
+  // セーブボタンがクリックされたときの関数
+  function handleSave(id: number) {
     updateTodo(id, editText);
     setEditId(null);
     setEditText("");
-  };
+  }
 
   return (
     <ul>
