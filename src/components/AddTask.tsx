@@ -11,7 +11,9 @@ export default function AddTask({ input, setInput, addTodo }: AddTaskProps) {
       <input
         type="text"
         className={`border rounded p-2 mr-2 w-80 ${
-          theme === "dark" ? "text-black" : "text-black"
+          theme === "dark"
+            ? "bg-gray-700 text-white border-gray-600"
+            : "bg-white text-black border-gray-300"
         }`}
         value={input}
         onChange={(e) => setInput(e.target.value)}

@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Todo, TaskListProps } from "@/types/type";
 import { useTheme } from "@/context/themeContext"; // 追加
 
+/**
+ * タスクリストを表示するコンポーネント
+ * タスクの表示、完了状態の切り替え、編集、削除の機能を提供
+ */
 export default function TaskList({
   todos,
   toggleTodo,
@@ -12,7 +16,7 @@ export default function TaskList({
   const [editText, setEditText] = useState<string>("");
   const { theme } = useTheme(); // 追加
 
-  //　編集ボタンがクリックされたときの関数
+  // 編集ボタンがクリックされたときの関数
   function handleEdit(id: number, currentText: string) {
     setEditId(id);
     setEditText(currentText);
@@ -40,8 +44,11 @@ export default function TaskList({
               type="text"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
+              // テーマに応じたスタイルを適用
               className={`border rounded p-1 ${
-                theme === "dark" ? "text-black bg-white" : "text-gray-800"
+                theme === "dark"
+                  ? "bg-gray-700 text-white border-gray-600"
+                  : "bg-white text-gray-800 border-gray-300"
               }`}
             />
           ) : (
