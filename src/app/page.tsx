@@ -5,110 +5,177 @@ import AddTask from "@/components/AddTask";
 import TaskList from "@/components/TaskList";
 import ChangeTheme from "@/components/ChangeTheme";
 import { useTheme } from "@/context/themeContext";
-import { Todo } from "@/types/type";
+import { Todo, ApiResponse } from "@/types/type";
 
 /**
  * メモアプリのメインコンポーネント
+ * PostgreSQLデータベースと連携するバージョン
  * Next.js 15, React 19環境で動作するクライアントサイドコンポーネント
  */
 export default function Home() {
-  // デフォルトのtodos（初期値として使用）
-  const defaultTodos: Todo[] = [
-    { id: 1, text: "買い物をする", completed: false },
-    { id: 2, text: "風呂掃除をする", completed: false },
-    { id: 3, text: "犬と散歩", completed: false },
-  ];
-
-  // メモのリストと入力フィールドの値を管理
-  // 初期状態は空の配列を使用し、useEffectでデータを読み込む
-
-  //todosの右側の解説
-  // <Todo[]> - TypeScript のジェネリック型アノテーションで、この状態が Todo 型のオブジェクトの配列であることを指定している。
-  // 初期値は空の配列[]を設定
+  // todosの状態管理
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { theme, toggleTheme } = useTheme();
 
-  // ローカルストレージにtodosを保存するヘルパー関数
-  function saveTodosToLocalStorage(updatedTodos: Todo[]): void {
-    // クライアントサイドでのみ実行されるようにチェック
-    if (typeof window !== "undefined") {
-      localStorage.setItem("todos", JSON.stringify(updatedTodos));
+  /**
+   * データベースからTodoリストを取得する関数
+   */
+  async function fetchTodos(): Promise<void> {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/todos");
+      const result: ApiResponse<Todo[]> = await response.json();
+
+      if (result.success && result.data) {
+        setTodos(result.data);
+      } else {
+        setError(result.error || "Failed to fetch todos");
+      }
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+      setError("ネットワークエラーが発生しました");
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  // コンポーネントがマウントされた後にローカルストレージから読み込む
+  // コンポーネントマウント時にデータを取得
   useEffect(() => {
-    // ローカルストレージからtodosを取得
-    const savedTodos = localStorage.getItem("todos");
-
-    if (savedTodos) {
-      // 保存されたデータがある場合は、それを使用
-      setTodos(JSON.parse(savedTodos));
-    } else {
-      // 保存されたデータがない場合は、デフォルト値を設定
-      setTodos(defaultTodos);
-      // デフォルト値をローカルストレージに保存
-      localStorage.setItem("todos", JSON.stringify(defaultTodos));
-    }
-
-    // データ読み込み完了のフラグを設定
-    setIsLoaded(true);
+    fetchTodos();
   }, []);
 
-  // メモを追加する関数
-  // 入力フィールドが空でない場合、新しいメモを作成し、ローカルストレージに保存
-  function addTodo(): void {
+  /**
+   * 新しいTodoを追加する関数
+   */
+  async function addTodo(): Promise<void> {
     if (input.trim() === "") return;
 
-    const newTodo: Todo = {
-      id: Date.now(),
-      text: input,
-      completed: false,
-    };
+    try {
+      const response = await fetch("/api/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: input }),
+      });
 
-    const updatedTodos = [...todos, newTodo];
-    setTodos(updatedTodos);
-    saveTodosToLocalStorage(updatedTodos);
-    setInput("");
+      const result: ApiResponse<Todo> = await response.json();
+
+      if (result.success && result.data) {
+        // 新しいTodoをリストの先頭に追加
+        setTodos((prevTodos) => [result.data!, ...prevTodos]);
+        setInput("");
+      } else {
+        setError(result.error || "Failed to add todo");
+      }
+    } catch (error) {
+      console.error("Error adding todo:", error);
+      setError("Todoの追加に失敗しました");
+    }
   }
 
-  // メモの完了状態を切り替える関数
-  // 指定されたIDのメモのcompletedプロパティを反転し、ローカルストレージを更新
-  function toggleTodo(id: number): void {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    );
+  /**
+   * Todoの完了状態を切り替える関数
+   */
+  async function toggleTodo(id: number): Promise<void> {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
 
-    setTodos(updatedTodos);
-    saveTodosToLocalStorage(updatedTodos);
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: !todo.completed }),
+      });
+
+      const result: ApiResponse<Todo> = await response.json();
+
+      if (result.success && result.data) {
+        // ローカル状態を更新
+        setTodos((prevTodos) =>
+          prevTodos.map((t) => (t.id === id ? result.data! : t))
+        );
+      } else {
+        setError(result.error || "Failed to toggle todo");
+      }
+    } catch (error) {
+      console.error("Error toggling todo:", error);
+      setError("Todoの更新に失敗しました");
+    }
   }
 
-  // 指定されたIDのメモを削除する関数
-  // フィルタリングで指定IDのメモを除外し、ローカルストレージを更新
-  function deleteTodo(id: number): void {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
-    saveTodosToLocalStorage(updatedTodos);
+  /**
+   * Todoを削除する関数
+   */
+  async function deleteTodo(id: number): Promise<void> {
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "DELETE",
+      });
+
+      const result: ApiResponse<null> = await response.json();
+
+      if (result.success) {
+        // ローカル状態からも削除
+        setTodos((prevTodos) => prevTodos.filter((t) => t.id !== id));
+      } else {
+        setError(result.error || "Failed to delete todo");
+      }
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+      setError("Todoの削除に失敗しました");
+    }
   }
 
-  // メモの内容を更新する関数
-  // 指定されたIDのメモのテキストを更新し、ローカルストレージを更新
-  function updateTodo(id: number, newText: string): void {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id ? { ...todo, text: newText } : todo
-    );
+  /**
+   * Todoのテキストを更新する関数
+   */
+  async function updateTodo(id: number, newText: string): Promise<void> {
+    if (newText.trim() === "") return;
 
-    setTodos(updatedTodos);
-    saveTodosToLocalStorage(updatedTodos);
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: newText }),
+      });
+
+      const result: ApiResponse<Todo> = await response.json();
+
+      if (result.success && result.data) {
+        // ローカル状態を更新
+        setTodos((prevTodos) =>
+          prevTodos.map((t) => (t.id === id ? result.data! : t))
+        );
+      } else {
+        setError(result.error || "Failed to update todo");
+      }
+    } catch (error) {
+      console.error("Error updating todo:", error);
+      setError("Todoの更新に失敗しました");
+    }
   }
 
-  // データ読み込み前は何も表示しない（ハイドレーションエラー防止）
-  if (!isLoaded) {
+  // ローディング中の表示
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-4 min-h-screen">
-        <p>読み込み中...</p>
+      <div
+        className={`container mx-auto p-4 min-h-screen flex items-center justify-center ${
+          theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
+        }`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>データベースから読み込み中...</p>
+        </div>
       </div>
     );
   }
@@ -118,7 +185,20 @@ export default function Home() {
       className={`container mx-auto p-4 min-h-screen ${
         theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
       }`}>
-      <h1 className="text-2xl font-bold mb-4">メモアプリ</h1>
+      <h1 className="text-2xl font-bold mb-4">メモアプリ (PostgreSQL版)</h1>
+
+      {/* エラー表示 */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+          <button
+            onClick={() => setError(null)}
+            className="ml-2 text-red-500 hover:text-red-700">
+            ×
+          </button>
+        </div>
+      )}
+
       <AddTask input={input} setInput={setInput} addTodo={addTodo} />
       <TaskList
         todos={todos}
@@ -127,6 +207,11 @@ export default function Home() {
         updateTodo={updateTodo}
       />
       <ChangeTheme toggleTheme={toggleTheme} />
+
+      {/* データベース接続状態の表示 */}
+      <div className="mt-8 text-sm text-gray-500">
+        <p>💾 PostgreSQLデータベースに接続中 (合計: {todos.length}件)</p>
+      </div>
     </div>
   );
 }
