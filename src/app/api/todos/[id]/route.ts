@@ -5,10 +5,8 @@ import { Todo, ApiResponse, UpdateTodoRequest } from "@/types/type";
 /**
  * PUT /api/todos/[id] - Todoを更新
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse<ApiResponse<Todo>>> {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }): Promise<NextResponse<ApiResponse<Todo>>> {
+  const params = await props.params;
   try {
     const todoId = parseInt(params.id);
 
@@ -92,10 +90,8 @@ export async function PUT(
 /**
  * DELETE /api/todos/[id] - Todoを削除
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse<ApiResponse<null>>> {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }): Promise<NextResponse<ApiResponse<null>>> {
+  const params = await props.params;
   try {
     const todoId = parseInt(params.id);
 
