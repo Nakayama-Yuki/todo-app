@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  # PostgreSQLデータベースサービス
+  postgres:
+    image: postgres:16-alpine # PostgreSQL 16系の最新マイナーバージョン
+    container_name: todo-postgres
+    environment:
+      POSTGRES_DB: todoapp
+      POSTGRES_USER: todouser
+      POSTGRES_PASSWORD: todopass
+    ports:
+      - "5432:5432" # ローカルホストの5432ポートにマッピング
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # 初期化SQL
+    networks:
+      - todo-network
+
+volumes:
+  postgres_data: # データの永続化用ボリューム
+
+networks:
+  todo-network: # アプリケーションとデータベース間のネットワーク
+    driver: bridge
