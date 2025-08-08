@@ -6,9 +6,9 @@
 
 ### 主要コンポーネント
 
-- **フロントエンド**: Next.js App Router, React 19, TailwindCSS v4, TypeScript 5
+- **フロントエンド**: Next.js 15, React 19, TailwindCSS v4, TypeScript 5
 - **バックエンド**: Next.js API Routes (`/src/app/api/todos/`)
-- **データベース**: PostgreSQL 16 (Docker コンテナ)
+- **データベース**: PostgreSQL 16 (Docker Alpine, `postgres:16-alpine`)
 - **パッケージマネージャー**: pnpm (必須)
 
 ## 重要なパターンと規約
@@ -17,7 +17,8 @@
 
 - `/src/lib/db.ts` の `getDbPool()` シングルトンパターンを使用 - 直接 Pool インスタンスを作成しない
 - すべての API ルートでパフォーマンス向上のため接続プールを使用
-- データベース認証情報: `todouser:todopass@localhost:5432/todoapp`
+- 環境変数 `DATABASE_URL` または固定認証情報: `todouser:todopass@localhost:5432/todoapp`
+- 接続プール設定: 最大 10 接続、30 秒アイドルタイムアウト、2 秒接続タイムアウト
 
 ### API レスポンスパターン
 
@@ -27,6 +28,11 @@ interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+// リクエスト型の例
+interface CreateTodoRequest {
+  text: string;
 }
 ```
 
@@ -39,7 +45,7 @@ interface ApiResponse<T> {
 ### データベーススキーマ
 
 ```sql
--- UPDATE 時にトリガーで自動更新される
+-- updated_at は自動更新トリガー付き
 CREATE TABLE todos (
     id SERIAL PRIMARY KEY,
     text VARCHAR(255) NOT NULL,
@@ -47,6 +53,18 @@ CREATE TABLE todos (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 自動更新関数とトリガー
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_todos_updated_at BEFORE UPDATE
+    ON todos FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
 
 ## 開発ワークフロー
@@ -80,6 +98,13 @@ docker-compose down -v && pnpm run db:up
 - 設定ファイル不要 - 新しい CSS ファーストアプローチを使用
 - `globals.css` で `@import "tailwindcss"` によりインポート
 - PostCSS プラグイン: `@tailwindcss/postcss`
+
+## Docker & データベース管理
+
+- PostgreSQL 16 Alpine イメージ使用 (`docker-compose.yml`)
+- 永続化ボリューム: `postgres_data`
+- 初期化スクリプト: `init.sql` に初期データとトリガー定義
+- コンテナ名: `todo-postgres`, ネットワーク: `todo-network`
 
 ## エラーハンドリングパターン
 
