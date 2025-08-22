@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # npm dependencies (main package.json)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
+    # Pull requestsの制限
+    open-pull-requests-limit: 5
+
+    # 特定の更新タイプを無視する設定
+    # メジャーアップデートを無効化（破壊的変更の可能性があるため）
+    ignore:
+      # すべての依存関係に対して
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+    # マイナーおよびパッチアップデートのみを対象
+    groups:
+      minor-and-patch-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # カスタムラベルを追加
+    labels:
+      - "dependencies"
+      - "npm"
+
+    # PRのタイトルにプレフィックスを追加
+    commit-message:
+      prefix: "deps"
+      include: "scope"
