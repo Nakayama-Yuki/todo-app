@@ -9,15 +9,13 @@ services:
       POSTGRES_PASSWORD: todopass
     ports:
       - "5432:5432" # ローカルホストの5432ポートにマッピング
-    volumes:
+    volumes:    
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql # 初期化SQL
     networks:
       - todo-network
-
 volumes:
   postgres_data: # データの永続化用ボリューム
-
 networks:
   todo-network: # アプリケーションとデータベース間のネットワーク
     driver: bridge
