@@ -129,7 +129,3 @@ docker-compose down -v
 # 再度起動
 pnpm run db:up
 ```
-
-## ライセンス
-
-MIT
