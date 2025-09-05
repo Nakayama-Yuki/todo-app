@@ -1,0 +1,59 @@
+# Node.js関連
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js関連
+.next/
+out/
+
+# 開発環境ファイル
+.env*.local
+.env.development
+.env.test
+
+# IDE・エディタ関連
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS関連
+.DS_Store
+Thumbs.db
+
+# Git関連
+.git
+.gitignore
+
+# Docker関連
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# ドキュメント・設定ファイル
+README.md
+*.md
+.github/
+
+# テスト関連
+coverage/
+.nyc_output/
+
+# ログファイル
+logs
+*.log
+
+# 一時ファイル
+tmp/
+temp/
+
+# データベース関連（開発用）
+*.db
+*.sqlite
+
+# バックアップファイル
+*.backup
+*.bak
