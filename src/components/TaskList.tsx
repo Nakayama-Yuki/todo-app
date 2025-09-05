@@ -55,7 +55,7 @@ export default function TaskList({
             <label
               className={`cursor-pointer ${
                 todo.completed
-                  ? "line-through text-gray-400"
+                  ? "line-through text-gray-500"
                   : theme === "dark"
                   ? "text-white"
                   : "text-black"
@@ -66,19 +66,19 @@ export default function TaskList({
           {editId === todo.id ? (
             <button
               onClick={() => handleSave(todo.id)}
-              className="bg-green-500 text-white p-1 ml-2 rounded-sm">
+              className="bg-green-600 text-white p-1 ml-2 rounded-sm">
               保存する
             </button>
           ) : (
             <button
               onClick={() => handleEdit(todo.id, todo.text)}
-              className="bg-yellow-500 text-white p-1 ml-2 rounded-sm">
+              className="bg-yellow-600 text-white p-1 ml-2 rounded-sm">
               編集
             </button>
           )}
           <button
             onClick={() => deleteTodo(todo.id)}
-            className="bg-red-500 text-white p-1 ml-2 rounded-sm">
+            className="bg-red-600 text-white p-1 ml-2 rounded-sm">
             消す
           </button>
         </li>

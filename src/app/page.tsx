@@ -189,11 +189,20 @@ export default function Home() {
 
       {/* エラー表示 */}
       {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div
+          className={`mb-4 p-4 rounded border ${
+            theme === "dark"
+              ? "bg-red-900 border-red-700 text-red-100"
+              : "bg-red-100 border-red-400 text-red-800"
+          }`}>
           {error}
           <button
             onClick={() => setError(null)}
-            className="ml-2 text-red-500 hover:text-red-700">
+            className={`ml-2 ${
+              theme === "dark"
+                ? "text-red-200 hover:text-red-100"
+                : "text-red-600 hover:text-red-700"
+            }`}>
             ×
           </button>
         </div>
@@ -209,8 +218,10 @@ export default function Home() {
       <ChangeTheme toggleTheme={toggleTheme} />
 
       {/* データベース接続状態の表示 */}
-      <div className="mt-8 text-sm text-gray-500">
-        <p>💾 PostgreSQLデータベースに接続中 (合計: {todos.length}件)</p>
+      <div className="mt-8 text-sm">
+        <p className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
+          💾 PostgreSQLデータベースに接続中 (合計: {todos.length}件)
+        </p>
       </div>
     </div>
   );

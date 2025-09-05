@@ -21,7 +21,7 @@ export default function AddTask({ input, setInput, addTodo }: AddTaskProps) {
       {/* タスク追加ボタン */}
       <button
         onClick={addTodo}
-        className="bg-blue-500 text-white p-2 rounded-sm">
+        className="bg-blue-600 text-white p-2 rounded-sm">
         追加する
       </button>
     </div>
