@@ -1,6 +1,6 @@
 # syntax=docker.io/docker/dockerfile:1
 
-# Node.js 22系の Alpine Linux ベースイメージを使用（セキュリティパッチ適用済み）
+# Node.js 22系の Alpine Linux ベースイメージを使用
 FROM node:22-alpine AS base
 
 # ========================================
