@@ -28,9 +28,3 @@ updates:
     # カスタムラベルを追加
     labels:
       - "dependencies"
-      - "npm"
-
-    # PRのタイトルにプレフィックスを追加
-    commit-message:
-      prefix: "deps"
-      include: "scope"
