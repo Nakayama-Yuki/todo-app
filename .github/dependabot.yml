@@ -24,7 +24,3 @@ updates:
         update-types:
           - "minor"
           - "patch"
-
-    # カスタムラベルを追加
-    labels:
-      - "dependencies"
