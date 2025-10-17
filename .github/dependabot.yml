@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly" # 週次で更新をチェック
 
     # Pull requestsの制限
     open-pull-requests-limit: 5
