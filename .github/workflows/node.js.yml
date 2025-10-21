@@ -1,34 +1,56 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# このワークフローは、Node.jsの依存関係をクリーンインストールし、
+# キャッシュを利用してビルドとテストを複数のNode.jsバージョンで実行します
+# 詳細: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI(wi)
+# ワークフローの名前（GitHub上で表示される）
+name: Node.js CI(pnpm)
 
+# ワークフローが実行されるタイミングを定義(pushとpull_request)
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
 
+# セキュリティのため、必要最小限の権限のみを付与
+permissions:
+  contents: read
+
+# ジョブの定義（実行される処理のまとまり）
 jobs:
+  # "build"という名前のジョブ
   build:
     runs-on: ubuntu-latest
 
+    # マトリックス戦略: 複数のNode.jsバージョンでテストを実行
     strategy:
       matrix:
+        # Node.js 20.x と 22.x の両方でテストを実行
         node-version: [20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
 
+    # 実行するステップの定義
     steps:
+      # ステップ1: リポジトリのコードをチェックアウト（取得）
       - uses: actions/checkout@v4
+
+      # ステップ2: pnpmパッケージマネージャーをインストール
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10 # pnpm v10を使用
+
+      # ステップ3: 指定されたバージョンのNode.jsをセットアップ
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          node-version: ${{ matrix.node-version }} # マトリックスで定義したバージョンを使用
+          ## キャッシュは不要(下記のpnpm公式サイト上部にあるメモの項目に記載あり)
+          ## https://pnpm.io/ja/continuous-integration
+
+      # ステップ4: プロジェクトの依存関係をインストール
       - name: Install dependencies
         run: pnpm install
+
+      # ステップ5: プロジェクトをビルド
       - run: pnpm run build
