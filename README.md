@@ -6,7 +6,7 @@ Next.js 15 + React 19 + PostgreSQL を使用した Todo アプリケーション
 
 - **Frontend**: Next.js 15, React 19, TypeScript 5, Tailwind CSS v4
 - **Backend**: Next.js API Routes
-- **Database**: PostgreSQL 15 (Docker)
+- **Database**: PostgreSQL 16 (Docker)
 - **Package Manager**: pnpm
 
 ## セットアップ方法
@@ -42,11 +42,11 @@ pnpm dev
 ## テスト
 
 ```bash
-# テストを実行
+# テストを実行（ウォッチモード）
 pnpm test
 
-# ウォッチモードでテストを実行
-pnpm test --watch
+# 1回だけ実行
+pnpm test --run
 
 # カバレッジレポートを生成
 pnpm test:coverage
