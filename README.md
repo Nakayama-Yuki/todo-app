@@ -39,6 +39,30 @@ pnpm dev
 
 アプリケーションは http://localhost:3000 で起動します。
 
+## テスト
+
+```bash
+# テストを実行
+pnpm test
+
+# ウォッチモードでテストを実行
+pnpm test --watch
+
+# カバレッジレポートを生成
+pnpm test:coverage
+```
+
+### テストの構成
+
+- **API テスト**: `/src/app/api/todos/route.test.ts`
+  - 全ての CRUD エンドポイントのテスト
+  - バリデーションとエラーハンドリングのテスト
+- **コンポーネントテスト**:
+  - `AddTask.test.tsx` - Todo 追加フォーム
+  - `TaskList.test.tsx` - Todo リストの表示・編集・削除
+  - `ChangeTheme.test.tsx` - テーマ切り替え機能
+- **ユニットテスト**: `db.test.ts` - データベース接続のシングルトンパターン
+
 ## データベース管理コマンド
 
 ```bash
