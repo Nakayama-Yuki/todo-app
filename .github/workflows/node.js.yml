@@ -52,5 +52,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # ステップ5: プロジェクトをビルド
+      # ステップ5: テストを実行
+      - name: Run tests
+        run: pnpm test --run
+
+      # ステップ6: プロジェクトをビルド
       - run: pnpm run build
