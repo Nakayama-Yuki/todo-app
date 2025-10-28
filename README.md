@@ -7,6 +7,7 @@ Next.js 15 + React 19 + PostgreSQL を使用した Todo アプリケーション
 - **Frontend**: Next.js 15, React 19, TypeScript 5, Tailwind CSS v4
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL 16 (Docker)
+- **Testing**: Vitest (Unit/Integration), Playwright (E2E)
 - **Package Manager**: pnpm
 
 ## セットアップ方法
@@ -41,6 +42,8 @@ pnpm dev
 
 ## テスト
 
+### ユニット・統合テスト (Vitest)
+
 ```bash
 # テストを実行（ウォッチモード）
 pnpm test
@@ -50,9 +53,30 @@ pnpm test --run
 
 # カバレッジレポートを生成
 pnpm test:coverage
+
+# UIモードでテスト実行
+pnpm test:ui
+```
+
+### E2E テスト (Playwright)
+
+```bash
+# E2Eテストを実行（ヘッドレスモード）
+pnpm test:e2e
+
+# UIモードでE2Eテストを実行
+pnpm test:e2e:ui
+
+# ブラウザを表示してE2Eテストを実行
+pnpm test:e2e:headed
+
+# テストレポートを表示
+pnpm test:e2e:report
 ```
 
 ### テストの構成
+
+#### ユニット・統合テスト (Vitest)
 
 - **API テスト**: `/src/app/api/todos/route.test.ts`
   - 全ての CRUD エンドポイントのテスト
@@ -62,6 +86,14 @@ pnpm test:coverage
   - `TaskList.test.tsx` - Todo リストの表示・編集・削除
   - `ChangeTheme.test.tsx` - テーマ切り替え機能
 - **ユニットテスト**: `db.test.ts` - データベース接続のシングルトンパターン
+
+#### E2E テスト (Playwright)
+
+- **E2E テスト**: `/e2e/todo.spec.ts`
+  - ページの読み込みテスト
+  - Todo の追加フロー
+  - Todo の完了状態切り替え
+  - Todo の削除フロー
 
 ## データベース管理コマンド
 
