@@ -5,10 +5,8 @@
 # ワークフローの名前（GitHub上で表示される）
 name: Node.js CI(pnpm)
 
-# ワークフローが実行されるタイミングを定義(pushとpull_request)
+# ワークフローが実行されるタイミングを定義(pull_requestがmainブランチに対して作成されたとき)
 on:
-  push:
-    branches: ["main"]
   pull_request:
     branches: ["main"]
 
@@ -25,14 +23,14 @@ jobs:
     # マトリックス戦略: 複数のNode.jsバージョンでテストを実行
     strategy:
       matrix:
-        # Node.js 20.x と 22.x と 24.xの３つでテストを実行
-        node-version: [20.x, 22.x, 24.x]
+        # Node.js 22.x と 24.xの２つでテストを実行
+        node-version: [22.x, 24.x]
         # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
 
     # 実行するステップの定義
     steps:
       # ステップ1: リポジトリのコードをチェックアウト（取得）
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # ステップ2: pnpmパッケージマネージャーをインストール
       - name: Install pnpm
@@ -42,11 +40,10 @@ jobs:
 
       # ステップ3: 指定されたバージョンのNode.jsをセットアップ
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }} # マトリックスで定義したバージョンを使用
-          ## キャッシュは不要(下記のpnpm公式サイト上部にあるメモの項目に記載あり)
-          ## https://pnpm.io/ja/continuous-integration
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm" # pnpmのキャッシュを有効化
 
       # ステップ4: プロジェクトの依存関係をインストール
       - name: Install dependencies
