@@ -37,6 +37,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 10 # pnpm v10を使用
+          run_install: false # 自動的に依存関係をインストールしない
 
       # ステップ3: 指定されたバージョンのNode.jsをセットアップ
       - name: Use Node.js ${{ matrix.node-version }}
@@ -49,9 +50,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # ステップ5: テストを実行
+      # ステップ5: Next.jsビルドキャッシュを復元
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
+
+      # ステップ6: テストを実行
       - name: Run tests
         run: pnpm test --run
 
-      # ステップ6: プロジェクトをビルド
+      # ステップ7: プロジェクトをビルド
       - run: pnpm run build
