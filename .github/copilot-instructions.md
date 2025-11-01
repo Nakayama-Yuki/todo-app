@@ -8,7 +8,7 @@
 
 - **フロントエンド**: Next.js 15, React 19, TailwindCSS v4, TypeScript 5
 - **バックエンド**: Next.js API Routes (`/src/app/api/todos/`)
-- **データベース**: PostgreSQL 16 (Docker Alpine, `postgres:16-alpine`)
+- **データベース**: PostgreSQL 17 (Docker Alpine, `postgres:17-alpine`)
 - **パッケージマネージャー**: pnpm (必須)
 
 ## 重要なパターンと規約
@@ -101,7 +101,7 @@ docker-compose down -v && pnpm run db:up
 
 ## Docker & データベース管理
 
-- PostgreSQL 16 Alpine イメージ使用 (`docker-compose.yml`)
+- PostgreSQL 17 Alpine イメージ使用 (`docker-compose.yml`)
 - 永続化ボリューム: `postgres_data`
 - 初期化スクリプト: `init.sql` に初期データとトリガー定義
 - コンテナ名: `todo-postgres`, ネットワーク: `todo-network`

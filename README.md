@@ -6,7 +6,7 @@ Next.js 15 + React 19 + PostgreSQL を使用した Todo アプリケーション
 
 - **Frontend**: Next.js 15, React 19, TypeScript 5, Tailwind CSS v4
 - **Backend**: Next.js API Routes
-- **Database**: PostgreSQL 16 (Docker)
+- **Database**: PostgreSQL 17 (Docker)
 - **Package Manager**: pnpm
 
 ## セットアップ方法
