@@ -16,7 +16,7 @@ services:
       - postgres
     networks:
       - todo-network
-    command: npm run dev # または pnpm dev
+    command: pnpm run dev # pnpm を使用（プロジェクト標準）
 
   # nginx ウェブサーバー
   nginx:
@@ -24,11 +24,8 @@ services:
     container_name: todo-nginx
     ports:
       - "80:80" # HTTP トラフィック
-      - "443:443" # HTTPS トラフィック（オプション）
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro # nginx 設定ファイル
-      - ./ssl:/etc/nginx/ssl:ro # SSL 証明書用（オプション）
-    depends_on:
       - app
     networks:
       - todo-network
