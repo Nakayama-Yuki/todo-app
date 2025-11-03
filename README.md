@@ -17,27 +17,67 @@ Next.js 15 + React 19 + PostgreSQL を使用した Todo アプリケーション
 pnpm install
 ```
 
-### 2. PostgreSQL データベースの起動
+### 2. Docker コンテナの起動
 
 ```bash
-# Docker Composeでデータベースを起動
+# Docker Composeで全サービスを起動（nginx, Next.js, PostgreSQL）
 pnpm run db:up
 
-# データベースのログを確認
-pnpm run db:logs
+# または個別に
+docker-compose up -d
+
+# サービスのログを確認
+docker-compose logs -f
 ```
 
 ### 3. 環境変数の設定
 
 `.env.local`ファイルが作成されていることを確認してください。
 
-### 4. アプリケーションの起動
+### 4. アプリケーションへのアクセス
+
+**開発環境:**
+
+- Next.js 直接: http://localhost:3000
+- nginx 経由: http://localhost:80
+
+**本番環境:**
+
+- nginx 経由のみ: http://localhost:80
+
+## nginx について
+
+このアプリケーションには **nginx** がウェブサーバーとして統合されています。
+
+### nginx の役割
+
+- **リバースプロキシ**: Next.js アプリケーションへのリクエストをプロキシ
+- **静的ファイルキャッシング**: `/_next/static/` と `/public/` をキャッシュして高速化
+- **Gzip 圧縮**: 転送データを圧縮して帯域幅を削減
+- **セキュリティ**: リバースプロキシによる保護
+
+### nginx 設定ファイル
+
+`nginx.conf` で nginx の設定を管理しています。主な設定：
+
+- **ポート**: 80 (HTTP), 443 (HTTPS - オプション)
+- **アップストリーム**: `app:3000` (Next.js アプリケーション)
+- **キャッシング戦略**: 静的ファイルは 60 日、公開ファイルは 7 日
+
+### 本番環境でのデプロイ
+
+本番環境では、以下のコマンドで構築・実行します：
 
 ```bash
-pnpm dev
-```
+# イメージのビルド
+docker-compose build
 
-アプリケーションは http://localhost:3000 で起動します。
+# サービスの起動
+docker-compose up -d
+
+# ステータス確認
+docker-compose ps
+```
 
 ## テスト
 

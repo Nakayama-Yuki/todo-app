@@ -32,6 +32,7 @@ Thumbs.db
 Dockerfile*
 docker-compose*.yml
 .dockerignore
+nginx.conf
 
 # ドキュメント・設定ファイル
 README.md
@@ -41,6 +42,9 @@ README.md
 # テスト関連
 coverage/
 .nyc_output/
+vitest.config.ts
+*.test.ts
+*.test.tsx
 
 # ログファイル
 logs
@@ -48,6 +52,8 @@ logs
 
 # 一時ファイル
 tmp/
+TESTING.md
+
 temp/
 
 # データベース関連（開発用）
