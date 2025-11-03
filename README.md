@@ -20,10 +20,10 @@ pnpm install
 ### 2. Docker コンテナの起動
 
 ```bash
-# Docker Composeで全サービスを起動（nginx, Next.js, PostgreSQL）
+# PostgreSQLサービスのみを起動
 pnpm run db:up
 
-# または個別に
+# 全サービス（nginx, Next.js, PostgreSQL）を起動する場合
 docker-compose up -d
 
 # サービスのログを確認

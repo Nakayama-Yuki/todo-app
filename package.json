@@ -10,7 +10,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "db:up": "docker-compose up -d postgres",
+    "postgres:up": "docker-compose up -d postgres",
     "db:down": "docker-compose down",
     "db:logs": "docker-compose logs postgres",
     "docker:build": "docker-compose build",
