@@ -39,11 +39,65 @@ docker-compose logs -f
 **開発環境:**
 
 - Next.js 直接: http://localhost:3000
-- nginx 経由: http://localhost:80
+- nginx 経由 (HTTPS): https://localhost:443
 
 **本番環境:**
 
-- nginx 経由のみ: http://localhost:80
+- nginx 経由のみ (HTTPS 必須): https://localhost:443
+
+⚠️ **注意**: nginx 経由での HTTP 接続（ポート 80）は**完全に拒否**されます。HTTPS でのアクセスが必須です。
+
+## HTTPS について
+
+このアプリケーションは **デフォルトで HTTPS（SSL/TLS）** に対応しています。
+
+### SSL 証明書の自動生成
+
+初回起動時に、以下のスクリプトを実行して自己署名 SSL 証明書を生成してください：
+
+```bash
+bash ./generate-ssl-certs.sh
+```
+
+このスクリプトで以下のファイルが生成されます：
+
+- `certs/server.crt` - SSL 証明書（365 日間有効）
+- `certs/server.key` - SSL 秘密鍵
+
+### 証明書情報
+
+- **種類**: 自己署名証明書（開発環境用）
+- **有効期限**: 365 日間
+- **対象**: localhost
+- **パス**: `./certs/` ディレクトリ
+
+### ブラウザでのアクセス
+
+開発環境では、自己署名証明書を使用するため、ブラウザが警告を表示します。以下の対応が必要です：
+
+**Chrome/Firefox:**
+
+1. 警告画面が表示されたら「詳細設定」または「詳細を表示」をクリック
+2. 「localhost にアクセス（安全ではありません）」をクリック
+
+### 本番環境への対応
+
+本番環境では、Let's Encrypt などの正式な SSL 証明書を取得し、以下のように設定してください：
+
+```bash
+# 証明書ファイルを certs/ ディレクトリに配置
+certs/
+├── server.crt     # 正式な証明書
+└── server.key     # 正式な秘密鍵
+```
+
+### nginx での HTTPS 設定
+
+nginx.conf で以下の設定が行われています：
+
+- **HTTP リクエスト拒否**: すべての HTTP リクエストを拒否（400 Bad Request）
+- **TLS バージョン**: TLS 1.2 以上
+- **HSTS ヘッダ**: ブラウザに HTTPS のみを強制（有効期限 31 日）
 
 ## nginx について
 
@@ -52,6 +106,8 @@ docker-compose logs -f
 ### nginx の役割
 
 - **リバースプロキシ**: Next.js アプリケーションへのリクエストをプロキシ
+- **HTTPS/SSL**: SSL/TLS による暗号化通信
+- **HTTP → HTTPS リダイレクト**: セキュリティの向上
 - **静的ファイルキャッシング**: `/_next/static/` と `/public/` をキャッシュして高速化
 - **Gzip 圧縮**: 転送データを圧縮して帯域幅を削減
 - **セキュリティ**: リバースプロキシによる保護
@@ -60,9 +116,10 @@ docker-compose logs -f
 
 `nginx.conf` で nginx の設定を管理しています。主な設定：
 
-- **ポート**: 80 (HTTP), 443 (HTTPS - オプション)
+- **ポート**: 80 (HTTP リクエスト拒否), 443 (HTTPS)
 - **アップストリーム**: `app:3000` (Next.js アプリケーション)
 - **キャッシング戦略**: 静的ファイルは 60 日、公開ファイルは 7 日
+- **SSL 証明書**: `/etc/nginx/certs/server.crt` と `/etc/nginx/certs/server.key`
 
 ### 本番環境でのデプロイ
 
