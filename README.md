@@ -123,17 +123,44 @@ nginx.conf で以下の設定が行われています：
 
 ### 本番環境でのデプロイ
 
-本番環境では、以下のコマンドで構築・実行します：
+本番環境では、以下の手順で構築・実行します：
+
+#### 1. 環境変数ファイルの準備
+
+```bash
+# サンプルファイルをコピー
+cp .env.prod.example .env.prod
+
+# エディタで開き、実際の値を設定
+nano .env.prod
+```
+
+`.env.prod` ファイルで以下の値を設定してください：
+
+```bash
+# データベース設定（本番環境用の強固なパスワードを設定）
+POSTGRES_DB=todoapp
+POSTGRES_USER=todouser
+POSTGRES_PASSWORD=your_secure_production_password_here
+
+# Next.js アプリケーション設定
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+NODE_ENV=production
+```
+
+⚠️ **重要**: `.env.prod` ファイルは機密情報を含むため、**絶対に Git リポジトリにコミットしないでください**。
+
+#### 2. イメージのビルドとサービスの起動
 
 ```bash
 # イメージのビルド
-docker-compose build
+docker-compose -f compose.prod.yaml build
 
 # サービスの起動
-docker-compose up -d
+docker-compose -f compose.prod.yaml --env-file .env.prod up -d
 
 # ステータス確認
-docker-compose ps
+docker-compose -f compose.prod.yaml ps
 ```
 
 ## テスト
@@ -232,6 +259,73 @@ todo-app/
 - API Routes は `/src/app/api/` ディレクトリ内に配置
 - TypeScript の型定義は `/src/types/type.ts` で管理
 - データベース接続は `/src/lib/db.ts` で管理
+
+### Next.js スタンドアローンモードについて
+
+このプロジェクトは `next.config.mjs` で `output: "standalone"` を設定しており、本番環境でのデプロイに最適化されています。
+
+**スタンドアローンモード**とは：
+
+- Next.js アプリケーションを Docker などの軽量なコンテナで実行するための最適化ビルドモード
+- 必要な依存関係のみを含むため、デプロイサイズが削減される
+- Node.js のみで実行可能
+
+**実行方法：**
+
+```bash
+# 開発環境
+pnpm dev
+
+# 本番環境ビルド
+pnpm build
+
+# スタンドアローンモードで起動
+pnpm start
+
+# または直接実行
+node .next/standalone/server.js
+```
+
+**注意事項：**
+
+- `next start` コマンドは `output: "standalone"` 設定と非互換のため、`package.json` の `start` スクリプトは `node .next/standalone/server.js` に設定してあります
+- Docker での本番環境デプロイに対応しています
+
+### Docker での環境変数の取り扱い
+
+スタンドアローンモードでは、環境変数の扱いが重要です：
+
+**ビルド時と実行時の環境変数：**
+
+1. **ビルド時の環境変数**：
+
+   - Dockerfile で `ARG` として定義
+   - `docker-compose.yml` の `build.args` で渡す
+   - ビルド中にのみ使用され、最終イメージには含まれない
+
+2. **実行時の環境変数**：
+   - `docker-compose.yml` の `environment` で設定
+   - コンテナ起動時に読み込まれる
+   - アプリケーションの実行時に必要
+
+**開発環境と本番環境の切り替え：**
+
+```bash
+# 開発環境（ホットリロード対応）
+docker-compose up
+
+# 本番環境（スタンドアローンモード）
+docker-compose -f docker-compose.prod.yaml up -d
+```
+
+**環境変数の設定箇所：**
+
+- `Dockerfile`：ビルド時の ARG 定義
+- `docker-compose.yml`：開発環境用の設定
+- `docker-compose.prod.yaml`：本番環境用の設定
+- `.env.local`：ローカル開発時の設定（Docker 未使用時）
+
+詳細は[Next.js 公式ドキュメント](https://nextjs.org/docs/pages/api-reference/next-config-js/output)および[Docker Compose サンプル](https://github.com/vercel/next.js/tree/canary/examples/with-docker-compose)を参照してください。
 
 ## トラブルシューティング
 

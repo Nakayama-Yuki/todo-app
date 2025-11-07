@@ -1,36 +1,28 @@
 services:
-  # Next.js アプリケーションサービス
+  # Next.js アプリケーションサービス(開発環境)
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # ビルド時に必要な環境変数を渡す
+        DATABASE_URL: postgresql://todouser:todopass@postgres:5432/todoapp
     container_name: todo-app
     environment:
+      # 実行時の環境変数を設定
       DATABASE_URL: postgresql://todouser:todopass@postgres:5432/todoapp
-    # ports:
-    #   - "3000:3000" # Next.js 開発サーバー（開発時のみ有効。プロダクションではnginx経由でアクセス）
+      NODE_ENV: development
+    ports:
+      - "3000:3000" # Next.js 開発サーバー
     volumes:
-      # - .:/app # ホットリロード用 (開発時のみ有効)
-      # - /app/node_modules # node_modules はマウントしない
+      - .:/app # ホットリロード用
+      - /app/node_modules # node_modules はマウントしない
+      - /app/.next # .next はマウントしない
     depends_on:
       - postgres
     networks:
       - todo-network
-    command: pnpm run dev # pnpm を使用（プロジェクト標準）
-
-  # nginx ウェブサーバー
-  nginx:
-    image: nginx:alpine
-    container_name: todo-nginx
-    ports:
-      - "80:80" # HTTP トラフィック（拒否）
-      - "443:443" # HTTPS トラフィック（SSL/TLS）
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # nginx 設定ファイル
-      - ./certs:/etc/nginx/certs:ro # SSL証明書ディレクトリ
-    networks:
-      - todo-network
-    restart: unless-stopped
+    command: pnpm run dev # pnpm を使用(プロジェクト標準)
 
   # PostgreSQLデータベースサービス
   postgres:
