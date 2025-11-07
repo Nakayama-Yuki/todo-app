@@ -9,7 +9,7 @@ services:
       DATABASE_URL: postgresql://todouser:todopass@postgres:5432/todoapp
     # ports:
     #   - "3000:3000" # Next.js 開発サーバー（開発時のみ有効。プロダクションではnginx経由でアクセス）
-    volumes:
+    volumes: []
       # - .:/app # ホットリロード用 (開発時のみ有効)
       # - /app/node_modules # node_modules はマウントしない
     depends_on:
