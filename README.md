@@ -264,6 +264,42 @@ node .next/standalone/server.js
 - `next start` コマンドは `output: "standalone"` 設定と非互換のため、`package.json` の `start` スクリプトは `node .next/standalone/server.js` に設定してあります
 - Docker での本番環境デプロイに対応しています
 
+### Docker での環境変数の取り扱い
+
+スタンドアローンモードでは、環境変数の扱いが重要です：
+
+**ビルド時と実行時の環境変数：**
+
+1. **ビルド時の環境変数**：
+
+   - Dockerfile で `ARG` として定義
+   - `docker-compose.yml` の `build.args` で渡す
+   - ビルド中にのみ使用され、最終イメージには含まれない
+
+2. **実行時の環境変数**：
+   - `docker-compose.yml` の `environment` で設定
+   - コンテナ起動時に読み込まれる
+   - アプリケーションの実行時に必要
+
+**開発環境と本番環境の切り替え：**
+
+```bash
+# 開発環境（ホットリロード対応）
+docker-compose up
+
+# 本番環境（スタンドアローンモード）
+docker-compose -f docker-compose.prod.yaml up -d
+```
+
+**環境変数の設定箇所：**
+
+- `Dockerfile`：ビルド時の ARG 定義
+- `docker-compose.yml`：開発環境用の設定
+- `docker-compose.prod.yaml`：本番環境用の設定
+- `.env.local`：ローカル開発時の設定（Docker 未使用時）
+
+詳細は[Next.js 公式ドキュメント](https://nextjs.org/docs/pages/api-reference/next-config-js/output)および[Docker Compose サンプル](https://github.com/vercel/next.js/tree/canary/examples/with-docker-compose)を参照してください。
+
 ## トラブルシューティング
 
 ### データベースに接続できない場合

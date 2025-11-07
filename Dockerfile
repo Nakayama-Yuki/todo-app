@@ -35,8 +35,15 @@ COPY --from=deps /app/node_modules ./node_modules
 # ソースコードをコピー
 COPY . .
 
-# Next.js のテレメトリを無効化（ビルド時）
+# Next.js のテレメトリを無効化(ビルド時)
 # ENV NEXT_TELEMETRY_DISABLED=1
+
+# ビルド時に必要な環境変数を ARG で受け取る
+# これらはビルド時にのみ使用され、最終イメージには含まれない
+ARG DATABASE_URL
+
+# ビルド時に環境変数として設定
+ENV DATABASE_URL=${DATABASE_URL}
 
 # アプリケーションをビルド
 RUN \
