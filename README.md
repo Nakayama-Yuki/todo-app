@@ -233,6 +233,37 @@ todo-app/
 - TypeScript の型定義は `/src/types/type.ts` で管理
 - データベース接続は `/src/lib/db.ts` で管理
 
+### Next.js スタンドアローンモードについて
+
+このプロジェクトは `next.config.mjs` で `output: "standalone"` を設定しており、本番環境でのデプロイに最適化されています。
+
+**スタンドアローンモード**とは：
+
+- Next.js アプリケーションを Docker などの軽量なコンテナで実行するための最適化ビルドモード
+- 必要な依存関係のみを含むため、デプロイサイズが削減される
+- Node.js のみで実行可能
+
+**実行方法：**
+
+```bash
+# 開発環境
+pnpm dev
+
+# 本番環境ビルド
+pnpm build
+
+# スタンドアローンモードで起動
+pnpm start
+
+# または直接実行
+node .next/standalone/server.js
+```
+
+**注意事項：**
+
+- `next start` コマンドは `output: "standalone"` 設定と非互換のため、`package.json` の `start` スクリプトは `node .next/standalone/server.js` に設定してあります
+- Docker での本番環境デプロイに対応しています
+
 ## トラブルシューティング
 
 ### データベースに接続できない場合
