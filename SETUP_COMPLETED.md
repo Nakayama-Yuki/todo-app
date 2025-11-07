@@ -47,7 +47,7 @@ Next.jsアプリケーションのビルドが正常に完了しました：
 #### ローカル開発（Docker未使用）
 ```bash
 # PostgreSQLのみをDockerで起動
-pnpm run postgres:up
+pnpm run postgres:up  # または: docker-compose up -d postgres
 
 # Next.jsを直接起動
 pnpm run dev
@@ -105,7 +105,7 @@ docker-compose -f compose.prod.yaml --env-file .env.prod up -d
 docker ps
 
 # PostgreSQLコンテナを起動
-pnpm run postgres:up
+pnpm run postgres:up  # または: docker-compose up -d postgres
 ```
 
 ### ポート競合が発生した場合
