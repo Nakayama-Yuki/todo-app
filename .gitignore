@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.prod
 
 # SSL certificates (開発環境用自己署名証明書)
 /certs/

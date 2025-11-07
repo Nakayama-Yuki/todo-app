@@ -123,17 +123,44 @@ nginx.conf で以下の設定が行われています：
 
 ### 本番環境でのデプロイ
 
-本番環境では、以下のコマンドで構築・実行します：
+本番環境では、以下の手順で構築・実行します：
+
+#### 1. 環境変数ファイルの準備
+
+```bash
+# サンプルファイルをコピー
+cp .env.prod.example .env.prod
+
+# エディタで開き、実際の値を設定
+nano .env.prod
+```
+
+`.env.prod` ファイルで以下の値を設定してください：
+
+```bash
+# データベース設定（本番環境用の強固なパスワードを設定）
+POSTGRES_DB=todoapp
+POSTGRES_USER=todouser
+POSTGRES_PASSWORD=your_secure_production_password_here
+
+# Next.js アプリケーション設定
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+NODE_ENV=production
+```
+
+⚠️ **重要**: `.env.prod` ファイルは機密情報を含むため、**絶対に Git リポジトリにコミットしないでください**。
+
+#### 2. イメージのビルドとサービスの起動
 
 ```bash
 # イメージのビルド
-docker-compose build
+docker-compose -f compose.prod.yaml build
 
 # サービスの起動
-docker-compose up -d
+docker-compose -f compose.prod.yaml --env-file .env.prod up -d
 
 # ステータス確認
-docker-compose ps
+docker-compose -f compose.prod.yaml ps
 ```
 
 ## テスト

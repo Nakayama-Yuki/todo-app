@@ -6,12 +6,12 @@ services:
       dockerfile: Dockerfile
       args:
         # ビルド時に必要な環境変数を渡す
-        DATABASE_URL: postgresql://todouser:todopass@postgres:5432/todoapp
+        DATABASE_URL: ${DATABASE_URL}
     container_name: todo-app
     environment:
       # 実行時の環境変数を設定
-      DATABASE_URL: postgresql://todouser:todopass@postgres:5432/todoapp
-      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      NODE_ENV: ${NODE_ENV:-production}
     depends_on:
       - postgres
     networks:
@@ -38,9 +38,9 @@ services:
     image: postgres:17-alpine # PostgreSQL 17系の最新マイナーバージョン
     container_name: todo-postgres
     environment:
-      POSTGRES_DB: todoapp
-      POSTGRES_USER: todouser
-      POSTGRES_PASSWORD: todopass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432" # ローカルホストの5432ポートにマッピング
     volumes:
