@@ -10,13 +10,13 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "postgres:up": "docker-compose up -d postgres",
-    "db:down": "docker-compose down",
-    "db:logs": "docker-compose logs postgres",
-    "docker:build": "docker-compose build",
-    "docker:up": "docker-compose up -d",
-    "docker:logs": "docker-compose logs -f",
-    "docker:ps": "docker-compose ps"
+    "postgres:up": "docker-compose -f docker-compose.dev.yml up -d postgres",
+    "db:down": "docker-compose -f docker-compose.dev.yml down",
+    "db:logs": "docker-compose -f docker-compose.dev.yml logs postgres",
+    "docker:build": "docker-compose -f docker-compose.dev.yml build",
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "docker:ps": "docker-compose -f docker-compose.dev.yml ps"
   },
   "dependencies": {
     "next": "^16.0.1",
