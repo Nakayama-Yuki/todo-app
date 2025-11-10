@@ -2,11 +2,11 @@
 
 ## アーキテクチャ概要
 
-これは **Next.js 15 + React 19** で構築された、PostgreSQL をデータベースとするフルスタック Todo アプリケーションです。サーバーサイド API ルートとクライアントサイド React コンポーネントを組み合わせたモダンなスタックを採用しています。
+これは **Next.js 16 + React 19** で構築された、PostgreSQL をデータベースとするフルスタック Todo アプリケーションです。サーバーサイド API ルートとクライアントサイド React コンポーネントを組み合わせたモダンなスタックを採用しています。
 
 ### 主要コンポーネント
 
-- **フロントエンド**: Next.js 15, React 19, TailwindCSS v4, TypeScript 5
+- **フロントエンド**: Next.js 16, React 19, TailwindCSS v4, TypeScript 5
 - **バックエンド**: Next.js API Routes (`/src/app/api/todos/`)
 - **データベース**: PostgreSQL 17 (Docker Alpine, `postgres:17-alpine`)
 - **パッケージマネージャー**: pnpm (必須)
