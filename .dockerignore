@@ -32,7 +32,6 @@ Thumbs.db
 Dockerfile*
 docker-compose*.yml
 .dockerignore
-nginx.conf
 
 # ドキュメント・設定ファイル
 README.md

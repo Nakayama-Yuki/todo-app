@@ -17,21 +17,8 @@ services:
     networks:
       - todo-network
     restart: unless-stopped
-    # standalone モードでは server.js が実行される (CMD で指定済み)
-
-  # nginx ウェブサーバー
-  nginx:
-    image: nginx:alpine
-    container_name: todo-nginx
     ports:
-      - "80:80" # HTTP トラフィック(拒否)
-      - "443:443" # HTTPS トラフィック(SSL/TLS)
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # nginx 設定ファイル
-      - ./certs:/etc/nginx/certs:ro # SSL証明書ディレクトリ
-    networks:
-      - todo-network
-    restart: unless-stopped
+      - "3000:3000"
 
   # PostgreSQLデータベースサービス
   postgres:
