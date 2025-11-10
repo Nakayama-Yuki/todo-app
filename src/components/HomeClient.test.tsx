@@ -427,7 +427,7 @@ describe("HomeClient コンポーネント", () => {
       await user.clear(editInput);
       await user.type(editInput, "Updated Task");
 
-      const saveButton = screen.getByRole("button", { name: "保存" });
+      const saveButton = screen.getByRole("button", { name: "保存する" });
       await user.click(saveButton);
 
       await waitFor(() => {
@@ -462,7 +462,7 @@ describe("HomeClient コンポーネント", () => {
       await user.clear(editInput);
       await user.type(editInput, "Updated Task");
 
-      const saveButton = screen.getByRole("button", { name: "保存" });
+      const saveButton = screen.getByRole("button", { name: "保存する" });
       await user.click(saveButton);
 
       await waitFor(() => {
@@ -490,7 +490,7 @@ describe("HomeClient コンポーネント", () => {
       await user.clear(editInput);
       await user.type(editInput, "Updated Task");
 
-      const saveButton = screen.getByRole("button", { name: "保存" });
+      const saveButton = screen.getByRole("button", { name: "保存する" });
       await user.click(saveButton);
 
       await waitFor(() => {
@@ -513,7 +513,7 @@ describe("HomeClient コンポーネント", () => {
       await user.clear(editInput);
       await user.type(editInput, "Updated Task");
 
-      const saveButton = screen.getByRole("button", { name: "保存" });
+      const saveButton = screen.getByRole("button", { name: "保存する" });
       await user.click(saveButton);
 
       await waitFor(() => {
@@ -536,7 +536,7 @@ describe("HomeClient コンポーネント", () => {
       await user.clear(editInput);
       await user.type(editInput, "  ");
 
-      const saveButton = screen.getByRole("button", { name: "保存" });
+      const saveButton = screen.getByRole("button", { name: "保存する" });
       await user.click(saveButton);
 
       expect(global.fetch).not.toHaveBeenCalled();
