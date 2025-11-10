@@ -1,10 +1,10 @@
 # Todo App with PostgreSQL
 
-Next.js 15 + React 19 + PostgreSQL を使用した Todo アプリケーションです。
+Next.js 16 + React 19 + PostgreSQL を使用した Todo アプリケーションです。
 
 ## 技術スタック
 
-- **Frontend**: Next.js 15, React 19, TypeScript 5, Tailwind CSS v4
+- **Frontend**: Next.js 16, React 19, TypeScript 5, Tailwind CSS v4
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL 17 (Docker)
 - **Package Manager**: pnpm
@@ -118,11 +118,18 @@ todo-app/
 │   │   └── themeContext.tsx    # テーマコンテキスト
 │   ├── lib/
 │   │   └── db.ts              # データベース接続
+│   ├── test/
+│   │   └── setup.ts           # テスト設定
 │   └── types/
 │       └── type.ts            # TypeScript型定義
-├── docker-compose.yml         # PostgreSQL設定
+├── compose.dev.yml            # 開発環境Docker Compose
+├── compose.prod.yaml          # 本番環境Docker Compose
+├── Dockerfile                 # Docker ビルド設定
 ├── init.sql                   # データベース初期化
 ├── .env.local                 # 環境変数
+├── next.config.mjs            # Next.js 設定
+├── tsconfig.json              # TypeScript 設定
+├── vitest.config.ts           # Vitest 設定
 └── package.json
 ```
 
@@ -154,15 +161,7 @@ pnpm build
 
 # スタンドアローンモードで起動
 pnpm start
-
-# または直接実行
-node .next/standalone/server.js
 ```
-
-**注意事項：**
-
-- `next start` コマンドは `output: "standalone"` 設定と非互換のため、`package.json` の `start` スクリプトは `node .next/standalone/server.js` に設定してあります
-- Docker での本番環境デプロイに対応しています
 
 ### Docker での環境変数の取り扱い
 
@@ -173,11 +172,11 @@ node .next/standalone/server.js
 1. **ビルド時の環境変数**：
 
    - Dockerfile で `ARG` として定義
-   - `docker-compose.yml` の `build.args` で渡す
+   - `compose.prod.yaml` の `build.args` で渡す
    - ビルド中にのみ使用され、最終イメージには含まれない
 
 2. **実行時の環境変数**：
-   - `docker-compose.yml` の `environment` で設定
+   - `compose.prod.yaml` の `environment` で設定
    - コンテナ起動時に読み込まれる
    - アプリケーションの実行時に必要
 
@@ -188,17 +187,17 @@ node .next/standalone/server.js
 docker-compose up
 
 # 本番環境（スタンドアローンモード）
-docker-compose -f docker-compose.prod.yaml up -d
+docker-compose -f compose.prod.yaml up -d
 ```
 
 **環境変数の設定箇所：**
 
 - `Dockerfile`：ビルド時の ARG 定義
-- `docker-compose.yml`：開発環境用の設定
-- `docker-compose.prod.yaml`：本番環境用の設定
+- `compose.dev.yml`：開発環境用の設定
+- `compose.prod.yaml`：本番環境用の設定
 - `.env.local`：ローカル開発時の設定（Docker 未使用時）
 
-詳細は[Next.js 公式ドキュメント](https://nextjs.org/docs/pages/api-reference/next-config-js/output)および[Docker Compose サンプル](https://github.com/vercel/next.js/tree/canary/examples/with-docker-compose)を参照してください。
+詳細は[Next.js 公式ドキュメント](https://nextjs.org/docs/app/api-reference/next-config-js/output)を参照してください。
 
 ## トラブルシューティング
 
