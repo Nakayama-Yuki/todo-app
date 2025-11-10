@@ -1,0 +1,38 @@
+# Playwright E2E テスト
+# マージ前に重要なユーザーワークフローが検証されることを保証します
+name: Playwright Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# E2E テストジョブ - アプリケーション機能をエンドツーエンドで検証
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      # リポジトリコードを取得（checkout）
+      - uses: actions/checkout@v5
+      # Node.js LTS バージョンをセットアップ
+      - uses: actions/setup-node@v6
+        with:
+          node-version: latest
+          cache: "pnpm"
+      # pnpm パッケージマネージャーをインストールし、プロジェクト依存関係をインストール
+      - name: Install dependencies
+        run: npm install -g pnpm && pnpm install
+      # Playwright ブラウザとシステム依存関係をインストール
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+      # すべての Playwright E2E テストを実行
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
+      # テストレポートをアーティファクトとしてアップロード（確認用に30日間保持）
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
