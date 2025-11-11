@@ -1,6 +1,12 @@
 # Playwright E2E テスト
 # マージ前に重要なユーザーワークフローが検証されることを保証します
 name: Playwright Tests
+
+# 権限設定
+permissions:
+  contents: read
+
+# トリガー条件
 on:
   push:
     branches: [main]
