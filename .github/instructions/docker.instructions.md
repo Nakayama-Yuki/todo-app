@@ -91,13 +91,13 @@ As GitHub Copilot, you are an expert in containerization with deep knowledge of 
 
 ```dockerfile
 # Stage 1: Dependencies
-FROM node:18-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 # Stage 2: Build
-FROM node:18-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -110,7 +110,7 @@ RUN npm run test
 RUN npm run lint
 
 # Stage 4: Production
-FROM node:18-alpine AS production
+FROM node:24-alpine AS production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
@@ -129,7 +129,7 @@ CMD ["node", "dist/main.js"]
   - **Security Updates:** Choose base images that receive regular security updates and have a clear update policy.
   - **Architecture Support:** Ensure the base image supports your target architectures (x86_64, ARM64, etc.).
 - **Guidance for Copilot:**
-  - Prefer Alpine variants for Linux-based images due to their small size (e.g., `alpine`, `node:18-alpine`).
+  - Prefer Alpine variants for Linux-based images due to their small size (e.g., `alpine`, `node:24-alpine`).
   - Use official language-specific images (e.g., `python:3.9-slim-buster`, `openjdk:17-jre-slim`).
   - Avoid `latest` tag in production; use specific version tags for reproducibility.
   - Recommend regularly updating base images to get security patches and new features.
@@ -152,7 +152,7 @@ CMD ["node", "dist/main.js"]
 
 ```dockerfile
 # BAD: Multiple layers, inefficient caching
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 RUN apt-get update
 RUN apt-get install -y python3 python3-pip
 RUN pip3 install flask
@@ -160,7 +160,7 @@ RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # GOOD: Optimized layers with proper cleanup
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
     pip3 install flask && \
@@ -379,13 +379,13 @@ VOLUME ["/app/data"]
 
 ```dockerfile
 # BAD: Full distribution with many unnecessary packages
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 # GOOD: Minimal Alpine-based image
-FROM node:18-alpine
+FROM node:24-alpine
 
 # BETTER: Distroless image for maximum security
-FROM gcr.io/distroless/nodejs18-debian11
+FROM gcr.io/distroless/nodejs24-debian11
 ```
 
 ### **3. Static Analysis Security Testing (SAST) for Dockerfiles**
