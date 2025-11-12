@@ -38,10 +38,10 @@ jobs:
           run_install: false # 自動的に依存関係をインストールしない
 
       # ステップ3: LTSのNode.jsをセットアップ
-      - name: Use Node.js latest
+      - name: Use Node.js LTS
         uses: actions/setup-node@v6
         with:
-          node-version: latest
+          node-version: lts/*
           cache: "pnpm" # pnpmのキャッシュを有効化
 
       # ステップ4: プロジェクトの依存関係をインストール
