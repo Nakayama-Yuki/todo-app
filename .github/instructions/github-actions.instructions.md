@@ -50,11 +50,11 @@ jobs:
       artifact_path: ${{ steps.package_app.outputs.path }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: lts/*
       - name: Install dependencies and build
         run: |
           npm ci
@@ -273,7 +273,7 @@ jobs:
       fail-fast: false # Run all tests even if one fails
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [22.x, 24.x]
         browser: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4

@@ -8,8 +8,6 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
     "postgres:up": "docker-compose -f docker-compose.dev.yml up -d postgres",
     "db:down": "docker-compose -f docker-compose.dev.yml down",
     "db:logs": "docker-compose -f docker-compose.dev.yml logs postgres",
