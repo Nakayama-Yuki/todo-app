@@ -50,11 +50,11 @@ jobs:
       artifact_path: ${{ steps.package_app.outputs.path }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: latest
       - name: Install dependencies and build
         run: |
           npm ci
