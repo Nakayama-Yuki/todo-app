@@ -25,6 +25,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Service Containers: PostgreSQL データベースサービス
+    # 詳細: https://docs.github.com/ja/actions/using-containerized-services/about-service-containers
+    services:
+      # サービスコンテナにアクセスするために使用するラベル
+      postgres:
+        # Docker Hub イメージ
+        image: postgres:17-alpine
+        # PostgreSQL の環境変数を GitHub Secrets から設定
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        # PostgreSQL が起動するまで待機するヘルスチェックを設定
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        # サービスコンテナのポート 5432 を Docker ホストにマッピング
+        ports:
+          - 5432:5432
+
     # 実行するステップの定義
     steps:
       # ステップ1: リポジトリのコードをチェックアウト（取得）
@@ -48,7 +70,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # ステップ5: Next.jsビルドキャッシュを復元
+      # ステップ5: データベーススキーマを初期化
+      # ヘルスチェックにより PostgreSQL は既に起動しているが、
+      # 確実に接続できることを確認してからスキーマを初期化する
+      - name: Initialize database
+        run: |
+          set -e
+          # PostgreSQL クライアント (psql) を使用してスキーマを初期化
+          psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
+        env:
+          # DATABASE_URL を GitHub Secrets から設定（アプリケーションで使用）
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+      # ステップ6: Next.jsビルドキャッシュを復元
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
@@ -62,10 +97,16 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-
 
-      # ステップ6: プロジェクトをビルド
+      # ステップ7: プロジェクトをビルド
+      # DATABASE_URL を GitHub Secrets から環境変数として渡すことで、ビルド時にDBへの接続が可能
       - name: Build project
         run: pnpm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      # ステップ7: テストを実行
+      # ステップ8: テストを実行
+      # テストコードでデータベースにアクセスできるように DATABASE_URL を GitHub Secrets から設定
       - name: Run tests
         run: pnpm test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
