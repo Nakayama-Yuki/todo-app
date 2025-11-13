@@ -75,11 +75,13 @@ jobs:
       # 確実に接続できることを確認してからスキーマを初期化する
       - name: Initialize database
         run: |
+          set -e
           # PostgreSQL クライアント (psql) を使用してスキーマを初期化
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
+          psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
         env:
           # DATABASE_URL を GitHub Secrets から設定（アプリケーションで使用）
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
       # ステップ6: Next.jsビルドキャッシュを復元
       - name: Cache Next.js build
