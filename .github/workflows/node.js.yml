@@ -32,11 +32,11 @@ jobs:
       postgres:
         # Docker Hub イメージ
         image: postgres:17-alpine
-        # PostgreSQL の環境変数を設定
+        # PostgreSQL の環境変数を GitHub Secrets から設定
         env:
-          POSTGRES_DB: todoapp
-          POSTGRES_USER: todouser
-          POSTGRES_PASSWORD: todopass
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         # PostgreSQL が起動するまで待機するヘルスチェックを設定
         options: >-
           --health-cmd pg_isready
@@ -76,10 +76,10 @@ jobs:
       - name: Initialize database
         run: |
           # PostgreSQL クライアント (psql) を使用してスキーマを初期化
-          PGPASSWORD=todopass psql -h localhost -p 5432 -U todouser -d todoapp -f init.sql
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
         env:
-          # DATABASE_URL を環境変数として設定（アプリケーションで使用）
-          DATABASE_URL: postgresql://todouser:todopass@localhost:5432/todoapp
+          # DATABASE_URL を GitHub Secrets から設定（アプリケーションで使用）
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       # ステップ6: Next.jsビルドキャッシュを復元
       - name: Cache Next.js build
@@ -96,15 +96,15 @@ jobs:
             ${{ runner.os }}-nextjs-
 
       # ステップ7: プロジェクトをビルド
-      # DATABASE_URL を環境変数として渡すことで、ビルド時にDBへの接続が可能
+      # DATABASE_URL を GitHub Secrets から環境変数として渡すことで、ビルド時にDBへの接続が可能
       - name: Build project
         run: pnpm run build
         env:
-          DATABASE_URL: postgresql://todouser:todopass@localhost:5432/todoapp
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       # ステップ8: テストを実行
-      # テストコードでデータベースにアクセスできるように DATABASE_URL を設定
+      # テストコードでデータベースにアクセスできるように DATABASE_URL を GitHub Secrets から設定
       - name: Run tests
         run: pnpm test
         env:
-          DATABASE_URL: postgresql://todouser:todopass@localhost:5432/todoapp
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
