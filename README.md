@@ -9,6 +9,35 @@ Next.js 16 + React 19 + PostgreSQL を使用した Todo アプリケーション
 - **Database**: PostgreSQL 17 (Docker)
 - **Package Manager**: pnpm
 
+## 環境変数の設定について
+
+このプロジェクトでは、開発環境と本番環境で異なる環境変数を使用します。
+
+### ファイル構成
+
+- `.env.local.example` - 環境変数のテンプレート（Git 管理対象）
+- `.env.dev` - 開発環境用の実際の値（Git 除外、リポジトリに含まれています）
+- `.env.prod` - 本番環境用の値（Git 除外、自分で作成）
+- `.env.local` - ローカル開発で Docker を使わない場合（Git 除外、オプション）
+
+### GitHub Actions での設定
+
+GitHub Actions（CI/CD）では以下の 3 つの Secrets が必要です：
+
+| Secret 名           | 説明           | 例                     |
+| ------------------- | -------------- | ---------------------- |
+| `POSTGRES_DB`       | データベース名 | `todoapp`              |
+| `POSTGRES_USER`     | ユーザー名     | `todouser`             |
+| `POSTGRES_PASSWORD` | パスワード     | `your_secure_password` |
+
+`DATABASE_URL`は上記 3 つの Secrets から自動生成されます。
+
+**Secrets の設定方法:**
+
+1. GitHub リポジトリの **Settings** → **Secrets and variables** → **Actions** を開く
+2. **New repository secret** をクリックして各 Secret を追加
+3. 開発環境と同じ値（`.env.dev`参照）を設定
+
 ## セットアップ方法
 
 ### 1. 依存関係のインストール
@@ -17,19 +46,29 @@ Next.js 16 + React 19 + PostgreSQL を使用した Todo アプリケーション
 pnpm install
 ```
 
-### 2. Docker コンテナの起動
+### 2. 環境変数の設定
 
 ```bash
-# PostgreSQL と Next.js アプリケーションを起動
-docker-compose up -d
+# テンプレートをコピーして開発用環境変数ファイルを作成（既に.env.devが存在する場合はスキップ）
+cp .env.local.example .env.dev
 
-# サービスのログを確認
-docker-compose logs -f
+# 本番環境用（必要に応じて）
+cp .env.local.example .env.prod
+# .env.prod のパスワードなどを変更してください
 ```
 
-### 3. 環境変数の設定
+### 3. Docker コンテナの起動
 
-`.env.local`ファイルが作成されていることを確認してください。
+```bash
+# 開発環境: PostgreSQL と Next.js アプリケーションを起動（ホットリロード対応）
+pnpm run docker:dev
+
+# または本番環境モード
+pnpm run docker:prod
+
+# サービスのログを確認
+pnpm run docker:logs
+```
 
 ### 4. アプリケーションへのアクセス
 
@@ -44,9 +83,6 @@ pnpm test
 
 # 1回だけ実行
 pnpm test --run
-
-# カバレッジレポートを生成
-pnpm test:coverage
 ```
 
 ### テストの構成
@@ -63,14 +99,17 @@ pnpm test:coverage
 ## データベース管理コマンド
 
 ```bash
-# データベースコンテナを起動
-pnpm run db:up
+# PostgreSQLコンテナのみを起動
+pnpm run postgres:up
 
-# データベースコンテナを停止
-pnpm run db:down
+# 全てのコンテナを停止
+pnpm run docker:down
 
-# データベースのログを表示
-pnpm run db:logs
+# PostgreSQLのログを表示
+pnpm run postgres:logs
+
+# 全コンテナの状態を確認
+pnpm run docker:ps
 ```
 
 ## データベース接続設定
@@ -122,11 +161,11 @@ todo-app/
 │   │   └── setup.ts           # テスト設定
 │   └── types/
 │       └── type.ts            # TypeScript型定義
-├── compose.dev.yml            # 開発環境Docker Compose
-├── compose.prod.yaml          # 本番環境Docker Compose
+├── docker-compose.yml         # 統合Docker Compose設定
 ├── Dockerfile                 # Docker ビルド設定
 ├── init.sql                   # データベース初期化
-├── .env.local                 # 環境変数
+├── .env.dev                   # 開発環境変数（Git除外）
+├── .env.local.example         # 環境変数テンプレート
 ├── next.config.mjs            # Next.js 設定
 ├── tsconfig.json              # TypeScript 設定
 ├── vitest.config.ts           # Vitest 設定
@@ -172,11 +211,11 @@ pnpm start
 1. **ビルド時の環境変数**：
 
    - Dockerfile で `ARG` として定義
-   - `compose.prod.yaml` の `build.args` で渡す
+   - `docker-compose.yml` の `build.args` で渡す
    - ビルド中にのみ使用され、最終イメージには含まれない
 
 2. **実行時の環境変数**：
-   - `compose.prod.yaml` の `environment` で設定
+   - `docker-compose.yml` の `environment` で設定
    - コンテナ起動時に読み込まれる
    - アプリケーションの実行時に必要
 
@@ -184,17 +223,23 @@ pnpm start
 
 ```bash
 # 開発環境（ホットリロード対応）
-docker-compose up
+docker-compose --env-file .env.dev up -d
+# または
+pnpm run docker:dev
 
 # 本番環境（スタンドアローンモード）
-docker-compose -f compose.prod.yaml up -d
+docker-compose --env-file .env.prod up -d
+# または
+pnpm run docker:prod
 ```
 
 **環境変数の設定箇所：**
 
 - `Dockerfile`：ビルド時の ARG 定義
-- `compose.dev.yml`：開発環境用の設定
-- `compose.prod.yaml`：本番環境用の設定
+- `docker-compose.yml`：統合 Docker Compose 設定（環境変数を参照）
+- `.env.dev`：開発環境用の実際の値
+- `.env.prod`：本番環境用の実際の値（Git 除外、自分で作成）
+- `.env.local.example`：環境変数のテンプレート
 - `.env.local`：ローカル開発時の設定（Docker 未使用時）
 
 詳細は[Next.js 公式ドキュメント](https://nextjs.org/docs/app/api-reference/next-config-js/output)を参照してください。
@@ -211,8 +256,9 @@ docker-compose -f compose.prod.yaml up -d
 
 ```bash
 # コンテナとボリュームを削除
+pnpm run docker:down
 docker-compose down -v
 
 # 再度起動
-pnpm run db:up
+pnpm run docker:dev
 ```

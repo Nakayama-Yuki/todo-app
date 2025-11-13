@@ -25,6 +25,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # 環境変数を設定（DATABASE_URLを3つのSecretsから動的に生成）
+    env:
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+
     # Service Containers: PostgreSQL データベースサービス
     # 詳細: https://docs.github.com/ja/actions/using-containerized-services/about-service-containers
     services:
@@ -79,8 +86,6 @@ jobs:
           # PostgreSQL クライアント (psql) を使用してスキーマを初期化
           psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
         env:
-          # DATABASE_URL を GitHub Secrets から設定（アプリケーションで使用）
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
       # ステップ6: Next.jsビルドキャッシュを復元
@@ -98,15 +103,11 @@ jobs:
             ${{ runner.os }}-nextjs-
 
       # ステップ7: プロジェクトをビルド
-      # DATABASE_URL を GitHub Secrets から環境変数として渡すことで、ビルド時にDBへの接続が可能
+      # DATABASE_URL はジョブレベルのenv変数として既に設定されているため、個別指定は不要
+      # ステップ7: プロジェクトをビルド
       - name: Build project
         run: pnpm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       # ステップ8: テストを実行
-      # テストコードでデータベースにアクセスできるように DATABASE_URL を GitHub Secrets から設定
       - name: Run tests
         run: pnpm test
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
