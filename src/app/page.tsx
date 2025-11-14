@@ -1,5 +1,6 @@
 import { Todo, ApiResponse } from "@/types/type";
 import HomeClient from "@/components/HomeClient";
+import { unstable_noStore } from "next/cache";
 
 /**
  * メモアプリのメインコンポーネント
@@ -11,9 +12,11 @@ import HomeClient from "@/components/HomeClient";
 // データベースからTodoリストを取得する関数
 async function fetchTodos(): Promise<Todo[]> {
   try {
+    unstable_noStore(); // 動的レンダリング: キャッシュしない
+
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/todos`, {
-      next: { revalidate: 0 }, // キャッシュしない（常に最新データを取得）
+      cache: "no-store", // フェッチごとにリクエスト
     });
 
     const result: ApiResponse<Todo[]> = await response.json();
