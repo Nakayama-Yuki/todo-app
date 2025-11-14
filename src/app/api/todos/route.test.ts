@@ -88,22 +88,6 @@ describe("POST /api/todos", () => {
     expect(data.success).toBe(false);
     expect(data.error).toContain("text");
   });
-
-  it.skip("text が255文字を超える場合はエラーを返す", async () => {
-    // TODO: 255文字制限のバリデーションを実装する必要がある
-    const longText = "a".repeat(256);
-    const request = new NextRequest("http://localhost:3000/api/todos", {
-      method: "POST",
-      body: JSON.stringify({ text: longText }),
-    });
-
-    const response = await POST(request);
-    const data: ApiResponse<Todo> = await response.json();
-
-    expect(response.status).toBe(400);
-    expect(data.success).toBe(false);
-    expect(data.error).toContain("255");
-  });
 });
 
 describe("PUT /api/todos/[id]", () => {

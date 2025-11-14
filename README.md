@@ -11,14 +11,13 @@ Next.js 16 + React 19 + PostgreSQL を使用した Todo アプリケーション
 
 ## 環境変数の設定について
 
-このプロジェクトでは、開発環境と本番環境で異なる環境変数を使用します。
+このプロジェクトでは単一の`.env`ファイルで環境管理を統一しています。
 
 ### ファイル構成
 
-- `.env.local.example` - 環境変数のテンプレート（Git 管理対象）
-- `.env.dev` - 開発環境用の実際の値（Git 除外、リポジトリには含まれません）
-- `.env.prod` - 本番環境用の値（Git 除外、自分で作成）
-- `.env.local` - ローカル開発で Docker を使わない場合（Git 除外、オプション）
+- `.env` - 統合環境変数ファイル（Git 管理対象・秘密情報なし）
+- `.env.local.example` - ローカル開発用設定テンプレート（Git 管理対象）
+- `.env.local` - ローカル上書き設定（Git 除外・オプション）
 
 ### GitHub Actions での設定
 
@@ -36,7 +35,7 @@ GitHub Actions（CI/CD）では以下の 3 つの Secrets が必要です：
 
 1. GitHub リポジトリの **Settings** → **Secrets and variables** → **Actions** を開く
 2. **New repository secret** をクリックして各 Secret を追加
-3. 開発環境と同じ値（`.env.dev`参照）を設定
+3. `.env`に定義された値と一致するように設定
 
 ## セットアップ方法
 
@@ -46,16 +45,15 @@ GitHub Actions（CI/CD）では以下の 3 つの Secrets が必要です：
 pnpm install
 ```
 
-### 2. 環境変数の設定
+### 2. 環境変数の設定（ローカル開発の場合）
+
+Docker なしでローカル開発する場合は`.env.local`を作成：
 
 ```bash
-# テンプレートをコピーして開発用環境変数ファイルを作成（既に.env.devが存在する場合はスキップ）
-cp .env.local.example .env.dev
-
-# 本番環境用（必要に応じて）
-cp .env.local.example .env.prod
-# .env.prod のパスワードなどを変更してください
+cp .env.local.example .env.local
 ```
+
+デフォルトの`.env`はすべての環境で共通です。
 
 ### 3. Docker コンテナの起動
 
@@ -67,6 +65,7 @@ pnpm run docker:dev
 pnpm dev
 
 # 本番環境: Next.js と PostgreSQL をDockerで起動
+# （.env の NODE_ENV など値を変更して実行）
 pnpm run docker:prod
 
 # サービスのログを確認
