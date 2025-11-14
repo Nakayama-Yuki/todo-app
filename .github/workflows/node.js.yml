@@ -104,7 +104,7 @@ jobs:
 
       # ステップ7: プロジェクトをビルド
       # DATABASE_URL はジョブレベルのenv変数として既に設定されているため、個別指定は不要
-      # ステップ7: プロジェクトをビルド
+
       - name: Build project
         run: pnpm run build
 

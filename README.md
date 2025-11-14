@@ -16,7 +16,7 @@ Next.js 16 + React 19 + PostgreSQL を使用した Todo アプリケーション
 ### ファイル構成
 
 - `.env.local.example` - 環境変数のテンプレート（Git 管理対象）
-- `.env.dev` - 開発環境用の実際の値（Git 除外、リポジトリに含まれています）
+- `.env.dev` - 開発環境用の実際の値（Git 除外、リポジトリには含まれません）
 - `.env.prod` - 本番環境用の値（Git 除外、自分で作成）
 - `.env.local` - ローカル開発で Docker を使わない場合（Git 除外、オプション）
 
