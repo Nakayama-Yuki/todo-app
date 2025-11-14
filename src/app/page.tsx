@@ -28,7 +28,7 @@ async function fetchTodos(): Promise<Todo[]> {
   }
 }
 
-// サーバーコンポーネントからクライントコンポーネントへデータを渡す
+// サーバーコンポーネントからクライアントコンポーネントへデータを渡す
 export default async function Home() {
   const initialTodos = await fetchTodos();
 
