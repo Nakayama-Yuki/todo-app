@@ -1,41 +1,45 @@
-import { Todo, ApiResponse } from "@/types/type";
+import { Suspense } from "react";
+import { Todo } from "@/types/type";
 import HomeClient from "@/components/HomeClient";
-import { unstable_noStore } from "next/cache";
+import { getDbPool } from "@/lib/db";
 
 /**
  * メモアプリのメインコンポーネント
  * Server Component でサーバー側からデータを取得
- * PostgreSQLデータベースと連携するバージョン
- * Next.js 16, React 19環境で動作
+ * PostgreSQLデータベースと連携する
  */
 
 // データベースからTodoリストを取得する関数
 async function fetchTodos(): Promise<Todo[]> {
   try {
-    unstable_noStore(); // 動的レンダリング: キャッシュしない
+    const pool = getDbPool();
+    const result = await pool.query(
+      "SELECT id, text, completed, created_at FROM todos ORDER BY created_at DESC"
+    );
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/todos`, {
-      cache: "no-store", // フェッチごとにリクエスト
-    });
-
-    const result: ApiResponse<Todo[]> = await response.json();
-
-    if (result.success && result.data) {
-      return result.data;
-    } else {
-      console.error("Failed to fetch todos:", result.error);
-      return [];
-    }
+    return result.rows.map((row) => ({
+      id: row.id,
+      text: row.text,
+      completed: row.completed,
+      created_at: row.created_at.toISOString(),
+    }));
   } catch (error) {
     console.error("Error fetching todos:", error);
     return [];
   }
 }
 
-// メインのHomeコンポーネント
-export default async function Home() {
+// 動的なコンテンツ用のコンポーネント（Suspense内で使用）
+async function TodoContent() {
   const initialTodos = await fetchTodos();
-
   return <HomeClient initialTodos={initialTodos} />;
+}
+
+// メインのHomeコンポーネント
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TodoContent />
+    </Suspense>
+  );
 }
