@@ -1,45 +1,41 @@
 services:
-  # Next.js アプリケーションサービス(本番環境)
+  # Next.js アプリ（本番はアプリもDockerで起動）
   app:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        # ビルド時に必要な環境変数を渡す
         DATABASE_URL: ${DATABASE_URL}
     container_name: todo-app
     environment:
-      # 実行時の環境変数を設定
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: ${NODE_ENV:-production}
+    ports:
+      - "3000:3000"
     depends_on:
       - postgres
     networks:
       - todo-network
     restart: unless-stopped
-    ports:
-      - "3000:3000"
 
-  # PostgreSQLデータベースサービス
+  # PostgreSQL（本番では外部公開ポートは原則公開しない）
   postgres:
-    image: postgres:17-alpine # PostgreSQL 17系の最新マイナーバージョン
+    image: postgres:17-alpine
     container_name: todo-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432" # ローカルホストの5432ポートにマッピング
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # 初期化SQL
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - todo-network
     restart: unless-stopped
 
 volumes:
-  postgres_data: # データの永続化用ボリューム
+  postgres_data:
 
 networks:
-  todo-network: # アプリケーションとデータベース間のネットワーク
+  todo-network:
     driver: bridge
