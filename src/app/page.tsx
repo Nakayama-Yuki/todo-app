@@ -11,7 +11,8 @@ import HomeClient from "@/components/HomeClient";
 // データベースからTodoリストを取得する関数
 async function fetchTodos(): Promise<Todo[]> {
   try {
-    const response = await fetch("/api/todos", {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/todos`, {
       next: { revalidate: 0 }, // キャッシュしない（常に最新データを取得）
     });
 

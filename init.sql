@@ -7,6 +7,9 @@ CREATE TABLE IF NOT EXISTS todos (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 既存データを削除
+TRUNCATE TABLE todos RESTART IDENTITY CASCADE;
+
 -- 初期データの挿入
 INSERT INTO todos (text, completed) VALUES 
     ('買い物をする', false),
