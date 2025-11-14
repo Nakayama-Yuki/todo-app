@@ -5,8 +5,7 @@ import { getDbPool } from "@/lib/db";
 
 /**
  * メモアプリのメインコンポーネント
- * Server Component でサーバー側からデータを取得
- * PostgreSQLデータベースと連携する
+ * Server Component でPostgreSQLDBからデータを取得する
  */
 
 // データベースからTodoリストを取得する関数
@@ -29,17 +28,13 @@ async function fetchTodos(): Promise<Todo[]> {
   }
 }
 
-// 動的なコンテンツ用のコンポーネント（Suspense内で使用）
-async function TodoContent() {
+// サーバーコンポーネントからクライントコンポーネントへデータを渡す
+export default async function Home() {
   const initialTodos = await fetchTodos();
-  return <HomeClient initialTodos={initialTodos} />;
-}
 
-// メインのHomeコンポーネント
-export default function Home() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <TodoContent />
+    <Suspense>
+      <HomeClient initialTodos={initialTodos} />
     </Suspense>
   );
 }
