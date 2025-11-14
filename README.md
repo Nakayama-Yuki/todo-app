@@ -167,7 +167,6 @@ todo-app/
 │       └── type.ts            # TypeScript型定義
 ├── docker-compose.dev.yml     # 開発: PostgreSQLのみDockerで起動
 ├── docker-compose.prod.yml    # 本番: Next.js + PostgreSQL をDockerで起動
-├── docker-compose.yml         # 旧: 統合設定（互換目的。新構成の使用を推奨）
 ├── Dockerfile                 # Docker ビルド設定
 ├── init.sql                   # データベース初期化
 ├── .env.dev                   # 開発環境変数（Git除外）
