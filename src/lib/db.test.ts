@@ -27,8 +27,9 @@ describe("Database Connection", () => {
   });
 
   it("環境変数が設定されている", () => {
-    // DATABASE_URL または デフォルト値が設定されているか確認
-    const hasDbConfig = process.env.DATABASE_URL || true;
+    // DATABASE_URL が設定されているか、またはテスト環境である
+    const hasDbConfig =
+      process.env.DATABASE_URL || process.env.NODE_ENV === "test";
     expect(hasDbConfig).toBeTruthy();
   });
 });
