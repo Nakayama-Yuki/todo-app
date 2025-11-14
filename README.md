@@ -106,14 +106,20 @@ pnpm test --run
 # PostgreSQLコンテナのみを起動
 pnpm run postgres:up
 
-# 全てのコンテナを停止
-pnpm run docker:down
+# 開発環境を停止
+pnpm run dev:down
+
+# 本番環境を停止
+pnpm run prod:down
 
 # PostgreSQLのログを表示
 pnpm run postgres:logs
 
-# 全コンテナの状態を確認
+# 開発環境の状態を確認
 pnpm run docker:ps
+
+# 本番環境の状態を確認
+pnpm run prod:ps
 ```
 
 ## データベース接続設定
