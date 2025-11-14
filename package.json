@@ -8,13 +8,16 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest",
-    "docker:dev": "docker-compose --env-file .env.dev up -d",
-    "docker:prod": "docker-compose --env-file .env.prod up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:ps": "docker-compose ps",
-    "postgres:up": "docker-compose --env-file .env.dev up -d postgres",
-    "postgres:logs": "docker-compose logs postgres"
+    "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build",
+    "dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "prod:down": "docker-compose -f docker-compose.prod.yml down",
+    "docker:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "prod:logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "docker:ps": "docker-compose -f docker-compose.dev.yml ps",
+    "prod:ps": "docker-compose -f docker-compose.prod.yml ps",
+    "postgres:up": "docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d postgres",
+    "postgres:logs": "docker-compose -f docker-compose.dev.yml logs postgres"
   },
   "dependencies": {
     "next": "^16.0.1",

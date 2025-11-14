@@ -1,0 +1,24 @@
+services:
+  # PostgreSQL（開発時はDBのみDockerで起動）
+  postgres:
+    image: postgres:17-alpine
+    container_name: todo-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - todo-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  todo-network:
+    driver: bridge

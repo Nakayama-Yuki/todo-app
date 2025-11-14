@@ -60,14 +60,18 @@ cp .env.local.example .env.prod
 ### 3. Docker コンテナの起動
 
 ```bash
-# 開発環境: PostgreSQL と Next.js アプリケーションを起動（ホットリロード対応）
+# 開発環境: PostgreSQL（DB）のみDockerで起動
 pnpm run docker:dev
 
-# または本番環境モード
+# アプリケーションはローカルで起動（ホットリロード）
+pnpm dev
+
+# 本番環境: Next.js と PostgreSQL をDockerで起動
 pnpm run docker:prod
 
 # サービスのログを確認
-pnpm run docker:logs
+pnpm run docker:logs       # 開発（DBのみ）
+pnpm run prod:logs         # 本番（アプリ+DB）
 ```
 
 ### 4. アプリケーションへのアクセス
@@ -161,7 +165,9 @@ todo-app/
 │   │   └── setup.ts           # テスト設定
 │   └── types/
 │       └── type.ts            # TypeScript型定義
-├── docker-compose.yml         # 統合Docker Compose設定
+├── docker-compose.dev.yml     # 開発: PostgreSQLのみDockerで起動
+├── docker-compose.prod.yml    # 本番: Next.js + PostgreSQL をDockerで起動
+├── docker-compose.yml         # 旧: 統合設定（互換目的。新構成の使用を推奨）
 ├── Dockerfile                 # Docker ビルド設定
 ├── init.sql                   # データベース初期化
 ├── .env.dev                   # 開発環境変数（Git除外）
