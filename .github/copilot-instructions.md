@@ -121,23 +121,31 @@ pnpm lint
 
 ## 🧪 テスト基準
 
-### ファイル配置
+### ファイル配置と実行
 
 - **単体テスト**: `*.test.ts` または `*.test.tsx` をソースファイルと同じ場所に配置
 - **例**: `AddTask.test.tsx`、`route.test.ts`、`db.test.ts`
+- **テストランナー**: Vitest（jsdom 環境、React Testing Library 使用）
+- **設定**: `vitest.config.ts` に基づく（tsconfig パス エイリアス `@` 対応）
 
-### テストカバレッジ
+### テストカバレッジと戦略
 
-- **API ルート**: CRUD 操作、バリデーション、エラーケースの全体
-- **コンポーネント**: ユーザー操作、プロップ レンダリング、状態更新
-- **データベース**: 接続プーリング、シングルトン動作
+- **API ルート** (`route.ts`): CRUD 操作、バリデーション、エラーケース、HTTP ステータス
+- **コンポーネント** (`HomeClient.tsx`, `TaskList.tsx`, `AddTask.tsx`): ユーザー操作、プロップ検証、状態更新
+- **データベース** (`db.ts`): シングルトン プール動作、エラーハンドリング
 
-### テスト実行
+### テスト実行コマンド
 
 ```bash
-pnpm test              # ウォッチモード
-pnpm test --run        # 1 回実行とカバレッジ取得
+pnpm test              # ウォッチモード（開発中）
+pnpm test --run        # シングルラン + カバレッジ（CI/CD）
 ```
+
+### テスト環境の特性
+
+- **jsdom**: ブラウザ環境をエミュレート（DOM API テスト用）
+- **API テスト**: モックではなく実際の API 実装をテスト（`NextResponse` 型チェック）
+- **セットアップ**: `src/test/setup.ts` で `@testing-library/jest-dom` を初期化
 
 ## 🚀 重要な実装ノート
 
@@ -219,3 +227,24 @@ GitHub Actions には 3 つのシークレットが必要:
 - 必要な場合のみクライアントコンポーネント (`"use client"`) にマーク
 - サーバーコンポーネントをデフォルトのままに
 - テストをコンポーネント ファイルと同じ場所に配置
+
+## 🔐 GitHub Secrets と CI/CD パイプライン
+
+### 環境変数の管理
+
+- **ローカル開発** (`.env`): コミット対象、秘密情報なし、全環境で共通
+- **GitHub Secrets**: CI/CD 実行時に `POSTGRES_DB`、`POSTGRES_USER`、`POSTGRES_PASSWORD` が必須
+- **自動生成**: `DATABASE_URL` は GitHub Actions で `postgresql://$USER:$PASSWORD@localhost:5432/$DB` の形式で動的生成
+
+### CI/CD ワークフロー (`.github/workflows/node.js.yml`)
+
+- **トリガー**: main ブランチへの push / PR / merge_group
+- **Service Containers**: PostgreSQL 17-alpine を起動（テスト実行中）
+- **テスト**: `pnpm test --run` でカバレッジ検証
+- **リント**: `pnpm lint` でコード品質チェック
+- **ビルド**: `pnpm build` で Next.js ビルド検証
+- **Secrets**: Settings → Secrets and variables → Actions で `POSTGRES_DB`、`POSTGRES_USER`、`POSTGRES_PASSWORD` を設定
+
+```
+
+```
