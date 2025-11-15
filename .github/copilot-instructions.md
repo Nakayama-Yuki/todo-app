@@ -244,7 +244,3 @@ GitHub Actions には 3 つのシークレットが必要:
 - **リント**: `pnpm lint` でコード品質チェック
 - **ビルド**: `pnpm build` で Next.js ビルド検証
 - **Secrets**: Settings → Secrets and variables → Actions で `POSTGRES_DB`、`POSTGRES_USER`、`POSTGRES_PASSWORD` を設定
-
-```
-
-```
