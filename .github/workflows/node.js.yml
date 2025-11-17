@@ -199,7 +199,7 @@ jobs:
 
       - name: Start production server
         # バックグラウンドで Next.js 本番サーバーを起動
-        run: pnpm start &
+        run: pnpm start 
 
       - name: Wait for server
         # サーバー起動完了を待つ
