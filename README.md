@@ -82,6 +82,8 @@ pnpm run prod:logs         # 本番（アプリ+DB）
 
 ## テスト
 
+### 単体テスト (Vitest)
+
 ```bash
 # テストを実行（ウォッチモード）
 pnpm test
@@ -90,7 +92,7 @@ pnpm test
 pnpm test --run
 ```
 
-### テストの構成
+#### テストの構成
 
 - **API テスト**: `/src/app/api/todos/route.test.ts`
   - 全ての CRUD エンドポイントのテスト
@@ -100,6 +102,47 @@ pnpm test --run
   - `TaskList.test.tsx` - Todo リストの表示・編集・削除
   - `ChangeTheme.test.tsx` - テーマ切り替え機能
 - **ユニットテスト**: `db.test.ts` - データベース接続のシングルトンパターン
+
+### E2E テスト (Playwright)
+
+E2E（End-to-End）テストは、ブラウザから実際のユーザー操作をシミュレートして、アプリケーション全体が正しく動作することを検証します。
+
+#### 実行方法
+
+```bash
+# E2E テストを実行（通常実行）
+pnpm test:e2e
+
+# UI モードで実行（テストの進行を可視化）
+pnpm test:e2e:ui
+
+# デバッグモードで実行
+pnpm test:e2e:debug
+
+# すべてのテストを実行（単体テスト + E2E）
+pnpm test:all
+```
+
+#### テストファイルの構成
+
+- **`tests/`**: Playwright E2E テストの配置ディレクトリ
+  - `*.spec.ts` - E2E テストファイル
+  - 例: `todo-crud.spec.ts`, `theme.spec.ts`
+
+#### テスト戦略
+
+| テスト種類     | ツール     | 対象                                       | 配置                     |
+| -------------- | ---------- | ------------------------------------------ | ------------------------ |
+| **単体テスト** | Vitest     | コンポーネント、API ルート、ユーティリティ | `src/**/*.test.{ts,tsx}` |
+| **E2E テスト** | Playwright | ユーザーフロー、UI インタラクション        | `tests/**/*.spec.ts`     |
+
+#### Playwright レポート
+
+テスト実行後、以下で HTML レポートを確認できます：
+
+```bash
+pnpm exec playwright show-report
+```
 
 ## データベース管理コマンド
 
