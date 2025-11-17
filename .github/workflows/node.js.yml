@@ -1,141 +1,217 @@
-# このワークフローは、Node.jsの依存関係をクリーンインストールし、
-# キャッシュを利用してビルドとテストを複数のNode.jsバージョンで実行します
+# このワークフローは、Next.js + PostgreSQL + pnpmプロジェクトの
+# ビルド、Lint、単体テスト、E2Eテストを効率的に実行します
 # 詳細: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-# ワークフローの名前（GitHub上で表示される）
 name: Node.js CI(pnpm)
 
-# ワークフローが実行されるタイミングを定義(pull_requestがmainブランチに対して作成されたとき)
+# ワークフローのトリガー条件
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-  # Pull Requestが承認されてマージキューに入ると、このワークフローが自動実行されます
   merge_group:
+    # GitHub のマージキューによるトリガー
     types: [checks_requested]
 
-# セキュリティのため、必要最小限の権限のみを付与
 permissions:
   contents: read
 
-# ジョブの定義（実行される処理のまとまり）
 jobs:
-  # "build"という名前のジョブ
+  # ========================================
+  # ジョブ1: Build - Next.jsビルド（独立実行）
+  # ========================================
   build:
     runs-on: ubuntu-latest
-
-    # 環境変数を設定（DATABASE_URLを3つのSecretsから動的に生成）
-    env:
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
-
-    # Service Containers: PostgreSQL データベースサービス
-    # 詳細: https://docs.github.com/ja/actions/using-containerized-services/about-service-containers
-    services:
-      # サービスコンテナにアクセスするために使用するラベル
-      postgres:
-        # Docker Hub イメージ
-        image: postgres:17-alpine
-        # PostgreSQL の環境変数を GitHub Secrets から設定
-        env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        # PostgreSQL が起動するまで待機するヘルスチェックを設定
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        # サービスコンテナのポート 5432 を Docker ホストにマッピング
-        ports:
-          - 5432:5432
-
-    # 実行するステップの定義
     steps:
-      # ステップ1: リポジトリのコードをチェックアウト（取得）
       - uses: actions/checkout@v5
 
-      # ステップ2: pnpmパッケージマネージャーをインストール
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10 # pnpm v10を使用
-          run_install: false # 自動的に依存関係をインストールしない
+          version: 10
+          run_install: false
 
-      # ステップ3: LTSのNode.jsをセットアップ
       - name: Use Node.js LTS
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          cache: "pnpm" # pnpmのキャッシュを有効化
+          cache: "pnpm"
 
-      # ステップ4: プロジェクトの依存関係をインストール
       - name: Install dependencies
         run: pnpm install
 
-      # ステップ5: データベーススキーマを初期化
-      # ヘルスチェックにより PostgreSQL は既に起動しているが、
-      # 確実に接続できることを確認してからスキーマを初期化する
-      - name: Initialize database
-        run: |
-          set -e
-          # PostgreSQL クライアント (psql) を使用してスキーマを初期化
-          psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
-        env:
-          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-
-      # ステップ6: Next.jsビルドキャッシュを復元
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
             ${{ github.workspace }}/.next/cache
-          # パッケージまたはソースファイルが変更された場合に新しいキャッシュを生成
+          # キャッシュキー: OS + pnpm-lock.yaml のハッシュ + ソースコードのハッシュ
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          #ソースファイルが変更されたがパッケージが変更されなかった場合、以前のキャッシュから再構築
+          # キャッシュ未ヒット時のフォールバックパス
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-
 
-      # ステップ7: プロジェクトをビルド
-      # DATABASE_URL はジョブレベルのenv変数として既に設定されているため、個別指定は不要
-
       - name: Build project
         run: pnpm run build
 
-      # ステップ8: 単体テストを実行
+      # ビルド成果物を後続ジョブで利用するためにキャッシュに保存
+      - name: Save build cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ${{ github.workspace }}/.next
+          # キャッシュキーに GitHub SHA を含めてユニークにする
+          key: ${{ runner.os }}-nextjs-build-${{ github.sha }}
+
+  # ========================================
+  # ジョブ2: Unit Tests - Vitestで単体テスト実行（ビルド後）
+  # ========================================
+  unit-test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    env:
+      # GitHub Secrets から環境変数を設定（データベース接続情報）
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      # Next.js が使用するデータベース接続URL
+      DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Initialize database
+        run: |
+          set -e
+          # init.sql を実行してデータベーススキーマを初期化
+          psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
+        env:
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
       - name: Run unit tests
         run: pnpm test --run
 
-      # ステップ9: Playwright ブラウザをインストール
+  # ========================================
+  # ジョブ3: E2E Tests - Playwrightで統合テスト実行（単体テスト後）
+  # ========================================
+  e2e-test:
+    # unit-test ジョブが完了してから実行（依存関係）
+    needs: unit-test
+    runs-on: ubuntu-latest
+
+    env:
+      # GitHub Secrets から環境変数を設定（データベース接続情報）
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      # 本番ビルドで E2E テストを実行
+      DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+      NODE_ENV: production
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ${{ github.workspace }}/.next
+          # build ジョブで作成されたキャッシュを復元
+          key: ${{ runner.os }}-nextjs-build-${{ github.sha }}
+          # キャッシュが見つからない場合はエラーで失敗
+          fail-on-cache-miss: true
+
+      - name: Initialize database
+        run: |
+          set -e
+          psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
+        env:
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      # ステップ10: 本番ビルドを起動
       - name: Start production server
+        # バックグラウンドで Next.js 本番サーバーを起動
         run: pnpm start &
-        env:
-          NODE_ENV: production
 
-      # ステップ11: サーバー起動を待機
       - name: Wait for server
+        # サーバー起動完了を待つ
         run: sleep 3
 
-      # ステップ12: E2E テストを実行
       - name: Run E2E tests
         run: pnpm test:e2e
-        env:
-          NODE_ENV: production
 
-      # ステップ13: Playwright レポートをアップロード
       - name: Upload Playwright report
+        # テストの成功/失敗に関わらず実行（レポートは常に必要）
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-report
           path: playwright-report/
