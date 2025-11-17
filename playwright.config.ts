@@ -29,7 +29,7 @@ export default defineConfig({
   /* 以下のすべてのプロジェクトで共有される設定。 https://playwright.dev/docs/api/class-testoptions. を参照 */
   use: {
     /* アクション内で使用するベースURL（例：`await page.goto('')`）*/
-    // baseURL: 'http://localhost:3000',
+    baseURL: "http://localhost:3000",
 
     /* 失敗したテストを再試行する際にトレースを収集。https://playwright.dev/docs/trace-viewer を参照 */
     trace: "on-first-retry",
@@ -74,9 +74,9 @@ export default defineConfig({
   ],
 
   /* テストを開始する前にローカル開発サーバーを起動 */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    command: "npm run start",
+    url: "http://localhost:3000",
+    reuseExistingServer: !process.env.CI,
+  },
 });
