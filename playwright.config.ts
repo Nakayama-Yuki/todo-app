@@ -15,7 +15,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   /* テストディレクトリの指定 */
-  testDir: "./tests",
+  testDir: "./tests/e2e",
   /* ファイル内のテストを並行実行 */
   fullyParallel: true,
   /* ソースコードにtest.onlyを残したままビルドを失敗させる */
