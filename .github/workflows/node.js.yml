@@ -197,14 +197,6 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Start production server
-        # バックグラウンドで Next.js 本番サーバーを起動
-        run: pnpm start 
-
-      - name: Wait for server
-        # サーバー起動完了を待つ
-        run: sleep 3
-
       - name: Run E2E tests
         run: pnpm test:e2e
 
