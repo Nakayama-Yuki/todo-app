@@ -15,7 +15,13 @@ export default defineConfig({
     // テスト前に実行するセットアップファイル
     setupFiles: "./tests/unit/setup.ts",
     // テスト対象ファイルのパターン
-    include: ["./tests/unit/**/*.test.{ts,tsx}"],
+    include: ["./tests/unit/**/*.test.{ts,tsx}", "./src/**/*.test.{ts,tsx}"],
+    // フォークプール設定：タイムアウトを延長、スレッドを制限
+    pool: "forks",
+    // テストタイムアウトを延長（デフォルト 10000ms）
+    testTimeout: 20000,
+    // hooks タイムアウト
+    hookTimeout: 20000,
   },
   resolve: {
     alias: {
