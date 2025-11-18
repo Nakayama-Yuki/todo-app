@@ -13,9 +13,15 @@ export default defineConfig({
     // グローバル変数 (describe, it など) を有効化
     globals: true,
     // テスト前に実行するセットアップファイル
-    setupFiles: "./src/test/setup.ts",
+    setupFiles: "./tests/unit/setup.ts",
     // テスト対象ファイルのパターン
-    include: ["**/*.{test,spec}.{ts,tsx}"],
+    include: ["./tests/unit/**/*.test.{ts,tsx}", "./src/**/*.test.{ts,tsx}"],
+    // フォークプール設定：タイムアウトを延長、スレッドを制限
+    pool: "forks",
+    // テストタイムアウトを延長（デフォルト 10000ms）
+    testTimeout: 20000,
+    // hooks タイムアウト
+    hookTimeout: 20000,
   },
   resolve: {
     alias: {

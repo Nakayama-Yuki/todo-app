@@ -1,5 +1,4 @@
-<!-- apply toを指定しなくても、.github直下にあるcopilot-instructions.mdはすべてのチャットに自動的に適用される -->
-<!-- 全体の指針になるinstructionsファイル -->
+<!-- apply toを記述しなくても、.github直下にあるcopilot-instructions.mdはすべてのチャットに自動的に適用される -->
 
 # GitHub Copilot 用の Todo App ガイド
 
@@ -12,7 +11,7 @@
 - **フロントエンド**: Next.js 16 (App Router)、React 19、TypeScript 5、Tailwind CSS v4
 - **バックエンド**: Next.js API Routes (`/app/api/todos/`)
 - **データベース**: PostgreSQL 17 (Docker)
-- **テスト**: Vitest + React Testing Library
+- **テスト**: Vitest (単体テスト) + Playwright (E2E テスト)
 - **パッケージマネージャー**: pnpm
 
 ### データフロー
@@ -121,31 +120,92 @@ pnpm lint
 
 ## 🧪 テスト基準
 
+### テストの種類と役割分担
+
+#### 単体テスト (Vitest)
+
+- **対象**: コンポーネント、API ルート、ユーティリティ関数
+- **配置**: ソースファイルと同じディレクトリ（`*.test.ts`, `*.test.tsx`）
+- **環境**: jsdom（ブラウザ環境エミュレーション）
+- **使用時機**: コンポーネント内部ロジック、入力値検証、エッジケース
+
+#### E2E テスト (Playwright)
+
+- **対象**: ユーザーフロー、UI インタラクション、複数コンポーネント間の連携
+- **配置**: `tests/` ディレクトリ内（`*.spec.ts`）
+- **環境**: 実際のブラウザ（chromium, firefox, webkit）
+- **使用時機**: Todo の追加・編集・削除フロー、テーマ切り替え、複数ページ間の遷移
+
 ### ファイル配置と実行
 
-- **単体テスト**: `*.test.ts` または `*.test.tsx` をソースファイルと同じ場所に配置
+#### 単体テスト
+
+- **配置**: `*.test.ts` または `*.test.tsx` をソースファイルと同じ場所に配置
 - **例**: `AddTask.test.tsx`、`route.test.ts`、`db.test.ts`
 - **テストランナー**: Vitest（jsdom 環境、React Testing Library 使用）
 - **設定**: `vitest.config.ts` に基づく（tsconfig パス エイリアス `@` 対応）
 
-### テストカバレッジと戦略
+#### E2E テスト
 
-- **API ルート** (`route.ts`): CRUD 操作、バリデーション、エラーケース、HTTP ステータス
-- **コンポーネント** (`HomeClient.tsx`, `TaskList.tsx`, `AddTask.tsx`): ユーザー操作、プロップ検証、状態更新
-- **データベース** (`db.ts`): シングルトン プール動作、エラーハンドリング
+- **配置**: `tests/` ディレクトリ内に `*.spec.ts` として配置
+- **命名規則**: 機能別に命名（例: `todo-crud.spec.ts`, `theme.spec.ts`）
+- **テストランナー**: Playwright（実ブラウザで実行）
+- **設定**: `playwright.config.ts` に基づく
 
 ### テスト実行コマンド
 
 ```bash
-pnpm test              # ウォッチモード（開発中）
-pnpm test --run        # シングルラン + カバレッジ（CI/CD）
+# 単体テスト - ウォッチモード
+pnpm test
+
+# 単体テスト - シングルラン
+pnpm test --run
+
+# E2E テスト
+pnpm test:e2e
+
+# E2E テスト - UI モード
+pnpm test:e2e:ui
+
+# すべてのテスト実行
+pnpm test:all
 ```
 
+### テストカバレッジと戦略
+
+#### API ルート
+
+- **対象** (`route.ts`): CRUD 操作、バリデーション、エラーケース、HTTP ステータス
+- **テスト種類**: 単体テスト（Vitest）で実装
+
+#### コンポーネント
+
+- **対象** (`HomeClient.tsx`, `TaskList.tsx`, `AddTask.tsx`): ユーザー操作、プロップ検証、状態更新
+- **テスト種類**: 単体テスト（Vitest）で実装
+
+#### ユーザーフロー
+
+- **例**: Todo の追加 → 編集 → 削除、テーマ切り替え動作
+- **テスト種類**: E2E テスト（Playwright）で実装
+
+#### データベース
+
+- **対象** (`db.ts`): シングルトン プール動作、エラーハンドリング
+- **テスト種類**: 単体テスト（Vitest）で実装
+
 ### テスト環境の特性
+
+#### Vitest (単体テスト)
 
 - **jsdom**: ブラウザ環境をエミュレート（DOM API テスト用）
 - **API テスト**: モックではなく実際の API 実装をテスト（`NextResponse` 型チェック）
 - **セットアップ**: `src/test/setup.ts` で `@testing-library/jest-dom` を初期化
+
+#### Playwright (E2E テスト)
+
+- **実ブラウザ**: Chrome、Firefox、Safari で動作確認
+- **自動サーバー起動**: `pnpm start` を自動実行（本番ビルド検証）
+- **トレース**: 失敗時に自動で操作ログを記録（`playwright-report/` に出力）
 
 ## 🚀 重要な実装ノート
 
