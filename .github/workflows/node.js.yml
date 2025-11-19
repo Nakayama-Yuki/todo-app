@@ -1,6 +1,6 @@
 # このワークフローは、Next.js + PostgreSQL + pnpmプロジェクトの
 # ビルド、Lint、単体テスト、E2Eテストを効率的に実行します
-# 詳細: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# 詳細: https://docs.github.com/ja/actions/tutorials/build-and-test-code/nodejs
 
 name: Node.js CI(pnpm)
 
