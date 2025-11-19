@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+// テーマ切り替えボタンが Todo 画面全体で一貫して機能するかを確認するテスト群。
 test.describe("Todo Application - Theme Functionality", () => {
+  // 毎回ホーム画面を開き、既定のテーマ状態から試験を始める。
   test.beforeEach(async ({ page }) => {
     await page.goto("");
   });
 
+  // テーマボタンを押しても DOM が崩れず正常に切り替わることを確認する。
   test("Toggle between light and dark themes", async ({ page }) => {
     await test.step("Find and click theme toggle button", async () => {
       const themeButton = page.getByRole("button", {
@@ -28,6 +31,7 @@ test.describe("Todo Application - Theme Functionality", () => {
     });
   });
 
+  // セッション中にテーマを変えても既存の Todo が見え続け、操作も可能なことを確かめる。
   test("Theme persists across page interactions", async ({ page }) => {
     const newTodoText = `Theme Test - ${Date.now()}`;
 

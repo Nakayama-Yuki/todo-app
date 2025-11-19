@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+// このスイートでは Todo の入力バリデーションと UI が想定外の入力でも安定するかを検証する。
 test.describe("Todo Application - Edge Cases and Validation", () => {
+  // 毎回トップページを開き、各ケースをクリーンな状態から実行する。
   test.beforeEach(async ({ page }) => {
     await page.goto("");
   });
 
+  // 空文字の送信が拒否されることで、ダミーの Todo が表示されないことを確認する。
   test("Prevent adding empty todo", async ({ page }) => {
     await test.step("Try to add empty todo", async () => {
       const input = page.getByRole("textbox");
@@ -20,6 +23,7 @@ test.describe("Todo Application - Edge Cases and Validation", () => {
     });
   });
 
+  // 空白のみの入力も登録されず、ゆるいチェックをすり抜けないことを確かめる。
   test("Prevent adding whitespace-only todo", async ({ page }) => {
     await test.step("Try to add whitespace-only todo", async () => {
       const input = page.getByRole("textbox");
@@ -35,6 +39,7 @@ test.describe("Todo Application - Edge Cases and Validation", () => {
     });
   });
 
+  // 記号や特殊文字が意図せず除去されず、そのまま表示できることを保証する。
   test("Handle special characters in todo text", async ({ page }) => {
     const specialCharsTodo = `Special: !@#$%^&*() - ${Date.now()}`;
 
@@ -49,6 +54,7 @@ test.describe("Todo Application - Edge Cases and Validation", () => {
     });
   });
 
+  // 非常に長いテキストでもレイアウト崩れが起きず、全文が確認できることを検証する。
   test("Handle very long todo text", async ({ page }) => {
     const longText = `Long Todo Text - ${"a".repeat(200)} - ${Date.now()}`;
 
@@ -64,6 +70,7 @@ test.describe("Todo Application - Edge Cases and Validation", () => {
     });
   });
 
+  // 連続で Todo を追加しても UI が固まらず、全件が描画されることを確認する。
   test("UI remains responsive with many todos", async ({ page }) => {
     await test.step("Add multiple todos rapidly", async () => {
       for (let i = 0; i < 5; i++) {
@@ -85,6 +92,7 @@ test.describe("Todo Application - Edge Cases and Validation", () => {
     });
   });
 
+  // Unicode や絵文字を使ったタイトルでも欠損せず表示できることを保証する。
   test("Handle Unicode and emoji characters", async ({ page }) => {
     const emojiTodo = `Todo with emoji 🎉✨ - ${Date.now()}`;
 

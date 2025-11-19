@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+// Todo の基本的な CRUD 機能がユーザー目線で成立しているかを確認するスイート。
 test.describe("Todo Application - CRUD Operations", () => {
+  // 毎回ホーム画面へ遷移して初期状態から操作を行う。
   test.beforeEach(async ({ page }) => {
     await page.goto("");
   });
 
+  // 初期表示でタイトルや見出しが整っているかを確認する。
   test("Display page title and initial UI elements", async ({ page }) => {
     await test.step("Verify page loads with proper structure", async () => {
       await expect(page).toHaveTitle(/Next/);
@@ -12,6 +15,7 @@ test.describe("Todo Application - CRUD Operations", () => {
     });
   });
 
+  // Todo を 1 件追加し、表示と入力クリアが機能するかを検証する。
   test("Add a new todo task", async ({ page }) => {
     const newTodoText = `Test Todo - ${Date.now()}`;
 
@@ -34,6 +38,7 @@ test.describe("Todo Application - CRUD Operations", () => {
     });
   });
 
+  // 完了チェックボックスで完了 ⇄ 未完了が双方向に切り替わることをテストする。
   test("Toggle todo completion status", async ({ page }) => {
     const newTodoText = `Toggle Test - ${Date.now()}`;
 
@@ -59,6 +64,7 @@ test.describe("Todo Application - CRUD Operations", () => {
     });
   });
 
+  // 既存の Todo を編集し、保存後に新しい文言へ更新されるかを確認する。
   test("Edit existing todo text", async ({ page }) => {
     const originalText = `Edit Original - ${Date.now()}`;
     const updatedText = `Edit Updated - ${Date.now()}`;
@@ -91,6 +97,7 @@ test.describe("Todo Application - CRUD Operations", () => {
     });
   });
 
+  // 登録済みの Todo を削除すると一覧から確実に消えることを検証する。
   test("Delete a todo task", async ({ page }) => {
     const todoToDelete = `Delete Me - ${Date.now()}`;
 
@@ -112,6 +119,7 @@ test.describe("Todo Application - CRUD Operations", () => {
     });
   });
 
+  // 複数追加した際の描画順序と表示状態を合わせて確認する。
   test("Multiple todos are displayed correctly", async ({ page }) => {
     const todos = [
       `Multiple Test 1 - ${Date.now()}`,
