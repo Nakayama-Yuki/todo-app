@@ -94,14 +94,14 @@ pnpm test --run
 
 #### テストの構成
 
-- **API テスト**: `/src/app/api/todos/route.test.ts`
+- **API テスト**: `tests/unit/app/api/todos/route.test.ts`
   - 全ての CRUD エンドポイントのテスト
   - バリデーションとエラーハンドリングのテスト
 - **コンポーネントテスト**:
-  - `AddTask.test.tsx` - Todo 追加フォーム
-  - `TaskList.test.tsx` - Todo リストの表示・編集・削除
-  - `ChangeTheme.test.tsx` - テーマ切り替え機能
-- **ユニットテスト**: `db.test.ts` - データベース接続のシングルトンパターン
+  - `tests/unit/components/AddTask.test.tsx` - Todo 追加フォーム
+  - `tests/unit/components/TaskList.test.tsx` - Todo リストの表示・編集・削除
+  - `tests/unit/components/ChangeTheme.test.tsx` - テーマ切り替え機能
+- **ユニットテスト**: `tests/unit/lib/db.test.ts` - データベース接続のシングルトンパターン
 
 ### E2E テスト (Playwright)
 
@@ -125,16 +125,16 @@ pnpm test:all
 
 #### テストファイルの構成
 
-- **`tests/`**: Playwright E2E テストの配置ディレクトリ
+- **`tests/e2e/`**: Playwright E2E テストの配置ディレクトリ
   - `*.spec.ts` - E2E テストファイル
   - 例: `todo-crud.spec.ts`, `theme.spec.ts`
 
 #### テスト戦略
 
-| テスト種類     | ツール     | 対象                                       | 配置                     |
-| -------------- | ---------- | ------------------------------------------ | ------------------------ |
-| **単体テスト** | Vitest     | コンポーネント、API ルート、ユーティリティ | `src/**/*.test.{ts,tsx}` |
-| **E2E テスト** | Playwright | ユーザーフロー、UI インタラクション        | `tests/**/*.spec.ts`     |
+| テスト種類     | ツール     | 対象                                       | 配置                            |
+| -------------- | ---------- | ------------------------------------------ | ------------------------------- |
+| **単体テスト** | Vitest     | コンポーネント、API ルート、ユーティリティ | `tests/unit/**/*.test.{ts,tsx}` |
+| **E2E テスト** | Playwright | ユーザーフロー、UI インタラクション        | `tests/e2e/**/*.spec.ts`        |
 
 #### Playwright レポート
 
@@ -211,15 +211,18 @@ todo-app/
 │   │   └── themeContext.tsx    # テーマコンテキスト
 │   ├── lib/
 │   │   └── db.ts              # データベース接続
-│   ├── test/
-│   │   └── setup.ts           # テスト設定
 │   └── types/
 │       └── type.ts            # TypeScript型定義
+├── tests/
+│   ├── unit/
+│   │   └── setup.ts           # Vitest設定
+│   └── e2e/
+│       └── *.spec.ts          # Playwright E2Eテスト
 ├── docker-compose.dev.yml     # 開発: PostgreSQLのみDockerで起動
 ├── docker-compose.prod.yml    # 本番: Next.js + PostgreSQL をDockerで起動
 ├── Dockerfile                 # Docker ビルド設定
 ├── init.sql                   # データベース初期化
-├── .env.dev                   # 開発環境変数（Git除外）
+├── .env                       # 統合環境変数（Git管理対象）
 ├── .env.local.example         # 環境変数テンプレート
 ├── next.config.mjs            # Next.js 設定
 ├── tsconfig.json              # TypeScript 設定
@@ -278,22 +281,18 @@ pnpm start
 
 ```bash
 # 開発環境（ホットリロード対応）
-docker-compose --env-file .env.dev up -d
-# または
 pnpm run docker:dev
 
 # 本番環境（スタンドアローンモード）
-docker-compose --env-file .env.prod up -d
-# または
 pnpm run docker:prod
 ```
 
 **環境変数の設定箇所：**
 
 - `Dockerfile`：ビルド時の ARG 定義
-- `docker-compose.yml`：統合 Docker Compose 設定（環境変数を参照）
-- `.env.dev`：開発環境用の実際の値
-- `.env.prod`：本番環境用の実際の値（Git 除外、自分で作成）
+- `docker-compose.dev.yml`：開発環境用 Docker Compose 設定
+- `docker-compose.prod.yml`：本番環境用 Docker Compose 設定
+- `.env`：環境変数（Git 管理対象・秘密情報なし）
 - `.env.local.example`：環境変数のテンプレート
 - `.env.local`：ローカル開発時の設定（Docker 未使用時）
 
