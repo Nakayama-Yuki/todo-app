@@ -176,16 +176,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Restore build cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            ${{ github.workspace }}/.next
-          # build ジョブで作成されたキャッシュを復元
-          key: ${{ runner.os }}-nextjs-build-${{ github.sha }}
-          # キャッシュが見つからない場合はエラーで失敗
-          fail-on-cache-miss: true
+      - name: Build Next.js for E2E tests
+        run: pnpm build
+
+      - name: Verify build output
+        run: |
+          echo "Checking .next/standalone structure..."
+          ls -la .next/ || echo ".next/ directory not found"
+          ls -la .next/standalone/ || echo ".next/standalone/ directory not found"
+          ls -la .next/standalone/server.js || echo "server.js not found"
 
       - name: Initialize database
         run: |
