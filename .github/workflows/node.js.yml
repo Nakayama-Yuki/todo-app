@@ -184,8 +184,8 @@ jobs:
             ${{ github.workspace }}/.next
           # build ジョブで作成されたキャッシュを復元
           key: ${{ runner.os }}-nextjs-build-${{ github.sha }}
-          # キャッシュが見つからない場合はエラーで失敗
-          fail-on-cache-miss: true
+          # キャッシュ未ヒット時も実行継続（初回実行時やキャッシュ削除時対応）
+          fail-on-cache-miss: false
 
       - name: Initialize database
         run: |
@@ -193,9 +193,6 @@ jobs:
           psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
         env:
           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
 
       - name: Run E2E tests
         run: pnpm test:e2e

@@ -33,6 +33,12 @@ export default defineConfig({
 
     /* 失敗したテストを再試行する際にトレースを収集。https://playwright.dev/docs/trace-viewer を参照 */
     trace: "on-first-retry",
+
+    /* 失敗時のスクリーンショット自動キャプチャ（デバッグ性向上） */
+    screenshot: "only-on-failure",
+
+    /* 失敗時のビデオ記録（CI環境でのデバッグ用） */
+    video: "retain-on-failure",
   },
 
   /* 主要ブラウザのプロジェクトを設定 */
@@ -41,12 +47,10 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
     },
-
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
