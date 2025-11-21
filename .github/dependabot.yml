@@ -4,16 +4,17 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly" # 週次で更新をチェック
+      interval: "weekly" # 週1で更新をチェック
 
-    # 特定の更新タイプを無視する設定
+    # 特定の更新タイプを無視する
     # メジャーアップデートを無効化（破壊的変更の可能性があるため）
     ignore:
       # すべての依存関係に対して
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-    # マイナーおよびパッチアップデートのみを対象
+    # 複数の更新を1つのグループにまとめる
+    # マイナーおよびパッチ更新をまとめて処理
     groups:
       minor-and-patch-updates:
         patterns:

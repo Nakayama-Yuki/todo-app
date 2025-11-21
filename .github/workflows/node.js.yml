@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -98,7 +98,7 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -159,7 +159,7 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -176,6 +176,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
       - name: Restore build cache
         uses: actions/cache/restore@v4
         with:
@@ -184,8 +187,6 @@ jobs:
             ${{ github.workspace }}/.next
           # build ジョブで作成されたキャッシュを復元
           key: ${{ runner.os }}-nextjs-build-${{ github.sha }}
-          # キャッシュが見つからない場合はエラーで失敗
-          fail-on-cache-miss: true
 
       - name: Initialize database
         run: |
@@ -193,9 +194,6 @@ jobs:
           psql -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} -f init.sql
         env:
           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
 
       - name: Run E2E tests
         run: pnpm test:e2e

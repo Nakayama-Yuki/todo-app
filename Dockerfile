@@ -29,11 +29,33 @@ RUN \
 FROM base AS builder
 WORKDIR /app
 
+# Playwright ブラウザ実行に必要な依存関係をインストール
+# https://playwright.dev/docs/docker
+RUN apk add --no-cache \
+  chromium \
+  firefox \
+  webkit2gtk \
+  glib \
+  nss \
+  freetype \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont
+
 # 依存関係をコピー
 COPY --from=deps /app/node_modules ./node_modules
 
 # ソースコードをコピー
 COPY . .
+
+# Playwright ブラウザバイナリを事前インストール（CI実行時間削減）
+# パッケージマネージャーに応じてインストール
+RUN \
+  if [ -f yarn.lock ]; then yarn exec playwright install --with-deps chromium firefox webkit; \
+  elif [ -f package-lock.json ]; then npx playwright install --with-deps chromium firefox webkit; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm exec playwright install --with-deps chromium firefox webkit; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
 # Next.js のテレメトリを無効化(ビルド時)
 # ENV NEXT_TELEMETRY_DISABLED=1
