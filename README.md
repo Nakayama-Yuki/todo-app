@@ -81,23 +81,34 @@ pnpm run prod:logs         # 本番（アプリ+DB）
 ## テスト
 
 ```bash
-# テストを実行（ウォッチモード）
+# 単体テストを実行（ウォッチモード）
 pnpm test
 
-# 1回だけ実行
+# 単体テストを1回だけ実行
 pnpm test --run
+
+# E2Eテスト（Playwright）を実行
+pnpm exec playwright test
+
+# Playwrightレポートを表示
+pnpm exec playwright show-report
 ```
 
 ### テストの構成
 
-- **API テスト**: `/src/app/api/todos/route.test.ts`
-  - 全ての CRUD エンドポイントのテスト
-  - バリデーションとエラーハンドリングのテスト
-- **コンポーネントテスト**:
-  - `AddTask.test.tsx` - Todo 追加フォーム
-  - `TaskList.test.tsx` - Todo リストの表示・編集・削除
-  - `ChangeTheme.test.tsx` - テーマ切り替え機能
-- **ユニットテスト**: `db.test.ts` - データベース接続のシングルトンパターン
+すべてのテストファイルは`tests/`ディレクトリに集約されています：
+
+- **単体テスト（Vitest）**:
+
+  - `tests/api/todos/route.test.ts` - API Routes の CRUD エンドポイント
+  - `tests/components/HomeClient.test.tsx` - メインコンポーネント
+  - `tests/components/AddTask.test.tsx` - Todo 追加フォーム
+  - `tests/components/TaskList.test.tsx` - Todo リストの表示・編集・削除
+  - `tests/components/ChangeTheme.test.tsx` - テーマ切り替え機能
+  - `tests/lib/db.test.ts` - データベース接続のシングルトンパターン
+
+- **E2E テスト（Playwright）**:
+  - `tests/example.spec.ts` - ブラウザベースの統合テスト
 
 ## データベース管理コマンド
 
@@ -161,24 +172,36 @@ todo-app/
 │   ├── components/             # UIコンポーネント
 │   │   ├── AddTask.tsx
 │   │   ├── ChangeTheme.tsx
+│   │   ├── HomeClient.tsx
 │   │   └── TaskList.tsx
 │   ├── context/
 │   │   └── themeContext.tsx    # テーマコンテキスト
 │   ├── lib/
 │   │   └── db.ts              # データベース接続
-│   ├── test/
-│   │   └── setup.ts           # テスト設定
 │   └── types/
 │       └── type.ts            # TypeScript型定義
+├── tests/                     # すべてのテストファイル
+│   ├── setup.ts               # Vitestセットアップファイル
+│   ├── api/todos/
+│   │   └── route.test.ts      # APIエンドポイントのテスト
+│   ├── components/
+│   │   ├── AddTask.test.tsx
+│   │   ├── ChangeTheme.test.tsx
+│   │   ├── HomeClient.test.tsx
+│   │   └── TaskList.test.tsx
+│   ├── lib/
+│   │   └── db.test.ts         # データベースのテスト
+│   └── example.spec.ts        # Playwright E2Eテスト
 ├── docker-compose.dev.yml     # 開発: PostgreSQLのみDockerで起動
 ├── docker-compose.prod.yml    # 本番: Next.js + PostgreSQL をDockerで起動
 ├── Dockerfile                 # Docker ビルド設定
 ├── init.sql                   # データベース初期化
-├── .env.dev                   # 開発環境変数（Git除外）
+├── .env                       # 環境変数（Git管理）
 ├── .env.local.example         # 環境変数テンプレート
 ├── next.config.mjs            # Next.js 設定
 ├── tsconfig.json              # TypeScript 設定
 ├── vitest.config.ts           # Vitest 設定
+├── playwright.config.ts       # Playwright 設定
 └── package.json
 ```
 
@@ -188,6 +211,9 @@ todo-app/
 - API Routes は `/src/app/api/` ディレクトリ内に配置
 - TypeScript の型定義は `/src/types/type.ts` で管理
 - データベース接続は `/src/lib/db.ts` で管理
+- すべてのテストファイルは `tests/` ディレクトリに集約
+  - 単体テスト（Vitest）: `tests/**/*.test.{ts,tsx}`
+  - E2E テスト（Playwright）: `tests/**/*.spec.{ts,tsx}`
 
 ### Next.js スタンドアローンモードについて
 
