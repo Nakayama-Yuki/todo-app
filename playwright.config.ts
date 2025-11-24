@@ -12,7 +12,8 @@ import { defineConfig, devices } from "@playwright/test";
  * https://playwright.dev/docs/test-configuration を参照してください。
  */
 export default defineConfig({
-  testDir: "./tests",
+  testDir: "./tests/e2e",
+  testMatch: "**/*.spec.{ts,tsx}",
   /* ファイル内のテストを並列実行します */
   fullyParallel: true,
   /* ソースコードに test.only を残した場合、CI でビルドを失敗させます */
@@ -26,7 +27,7 @@ export default defineConfig({
   /* 以下のすべてのプロジェクト共有設定。https://playwright.dev/docs/api/class-testoptions を参照してください */
   use: {
     /* `await page.goto('')` などのアクションで使用するベース URL */
-    // baseURL: 'http://localhost:3000',
+    baseURL: "http://localhost:3000",
 
     /* 失敗したテストを再試行時にトレースを収集します。https://playwright.dev/docs/trace-viewer を参照してください */
     trace: "on-first-retry",

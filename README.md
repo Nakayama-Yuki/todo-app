@@ -98,17 +98,17 @@ pnpm exec playwright show-report
 
 すべてのテストファイルは`tests/`ディレクトリに集約されています：
 
-- **単体テスト（Vitest）**:
+- **単体テスト（Vitest）** - `tests/unit/`
 
-  - `tests/api/todos/route.test.ts` - API Routes の CRUD エンドポイント
-  - `tests/components/HomeClient.test.tsx` - メインコンポーネント
-  - `tests/components/AddTask.test.tsx` - Todo 追加フォーム
-  - `tests/components/TaskList.test.tsx` - Todo リストの表示・編集・削除
-  - `tests/components/ChangeTheme.test.tsx` - テーマ切り替え機能
-  - `tests/lib/db.test.ts` - データベース接続のシングルトンパターン
+  - `tests/unit/api/todos/route.test.ts` - API Routes の CRUD エンドポイント
+  - `tests/unit/components/HomeClient.test.tsx` - メインコンポーネント
+  - `tests/unit/components/AddTask.test.tsx` - Todo 追加フォーム
+  - `tests/unit/components/TaskList.test.tsx` - Todo リストの表示・編集・削除
+  - `tests/unit/components/ChangeTheme.test.tsx` - テーマ切り替え機能
+  - `tests/unit/lib/db.test.ts` - データベース接続のシングルトンパターン
 
-- **E2E テスト（Playwright）**:
-  - `tests/example.spec.ts` - ブラウザベースの統合テスト
+- **E2E テスト（Playwright）** - `tests/e2e/`
+  - `tests/e2e/example.spec.ts` - ブラウザベースの統合テスト
 
 ## データベース管理コマンド
 
@@ -181,17 +181,19 @@ todo-app/
 │   └── types/
 │       └── type.ts            # TypeScript型定義
 ├── tests/                     # すべてのテストファイル
-│   ├── setup.ts               # Vitestセットアップファイル
-│   ├── api/todos/
-│   │   └── route.test.ts      # APIエンドポイントのテスト
-│   ├── components/
-│   │   ├── AddTask.test.tsx
-│   │   ├── ChangeTheme.test.tsx
-│   │   ├── HomeClient.test.tsx
-│   │   └── TaskList.test.tsx
-│   ├── lib/
-│   │   └── db.test.ts         # データベースのテスト
-│   └── example.spec.ts        # Playwright E2Eテスト
+│   ├── unit/                  # 単体テスト（Vitest）
+│   │   ├── setup.ts           # Vitestセットアップファイル
+│   │   ├── api/todos/
+│   │   │   └── route.test.ts  # APIエンドポイントのテスト
+│   │   ├── components/
+│   │   │   ├── AddTask.test.tsx
+│   │   │   ├── ChangeTheme.test.tsx
+│   │   │   ├── HomeClient.test.tsx
+│   │   │   └── TaskList.test.tsx
+│   │   └── lib/
+│   │       └── db.test.ts     # データベースのテスト
+│   └── e2e/                   # E2Eテスト（Playwright）
+│       └── example.spec.ts    # Playwright E2Eテスト
 ├── docker-compose.dev.yml     # 開発: PostgreSQLのみDockerで起動
 ├── docker-compose.prod.yml    # 本番: Next.js + PostgreSQL をDockerで起動
 ├── Dockerfile                 # Docker ビルド設定

@@ -52,17 +52,19 @@ src/
   types/
     type.ts        # 集約 TypeScript インターフェース
 tests/             # すべてのテストファイルを集約
-  setup.ts         # Vitestセットアップファイル
-  api/todos/
-    route.test.ts  # API Routes テスト
-  components/
-    HomeClient.test.tsx
-    TaskList.test.tsx
-    AddTask.test.tsx
-    ChangeTheme.test.tsx
-  lib/
-    db.test.ts     # データベーステスト
-  example.spec.ts  # Playwright E2Eテスト
+  unit/            # Vitest 単体テスト
+    setup.ts       # Vitestセットアップファイル
+    api/todos/
+      route.test.ts  # API Routes テスト
+    components/
+      HomeClient.test.tsx
+      TaskList.test.tsx
+      AddTask.test.tsx
+      ChangeTheme.test.tsx
+    lib/
+      db.test.ts   # データベーステスト
+  e2e/             # Playwright E2Eテスト
+    example.spec.ts
 ```
 
 ## 🔧 開発ワークフロー
@@ -137,10 +139,10 @@ pnpm lint
 ### ファイル配置と実行
 
 - **すべてのテストファイルは `tests/` ディレクトリに集約**
-- **単体テスト（Vitest）**: `tests/**/*.test.{ts,tsx}`
-  - 例: `tests/components/AddTask.test.tsx`、`tests/api/todos/route.test.ts`、`tests/lib/db.test.ts`
-- **E2E テスト（Playwright）**: `tests/**/*.spec.{ts,tsx}`
-  - 例: `tests/example.spec.ts`
+- **単体テスト（Vitest）**: `tests/unit/**/*.test.{ts,tsx}`
+  - 例: `tests/unit/components/AddTask.test.tsx`、`tests/unit/api/todos/route.test.ts`、`tests/unit/lib/db.test.ts`
+- **E2E テスト（Playwright）**: `tests/e2e/**/*.spec.{ts,tsx}`
+  - 例: `tests/e2e/example.spec.ts`
 - **テストランナー**:
   - Vitest（jsdom 環境、React Testing Library 使用）
   - Playwright（ブラウザベースの統合テスト）
@@ -148,10 +150,10 @@ pnpm lint
 
 ### テストカバレッジと戦略
 
-- **API ルート** (`tests/api/todos/route.test.ts`): CRUD 操作、バリデーション、エラーケース、HTTP ステータス
-- **コンポーネント** (`tests/components/*.test.tsx`): ユーザー操作、プロップ検証、状態更新
-- **データベース** (`tests/lib/db.test.ts`): シングルトン プール動作、エラーハンドリング
-- **E2E** (`tests/*.spec.ts`): ブラウザベースの統合テスト
+- **API ルート** (`tests/unit/api/todos/route.test.ts`): CRUD 操作、バリデーション、エラーケース、HTTP ステータス
+- **コンポーネント** (`tests/unit/components/*.test.tsx`): ユーザー操作、プロップ検証、状態更新
+- **データベース** (`tests/unit/lib/db.test.ts`): シングルトン プール動作、エラーハンドリング
+- **E2E** (`tests/e2e/*.spec.ts`): ブラウザベースの統合テスト
 
 ### テスト実行コマンド
 
@@ -166,7 +168,7 @@ pnpm exec playwright show-report # E2Eテスト: レポート表示
 
 - **jsdom**: ブラウザ環境をエミュレート(DOM API テスト用)
 - **API テスト**: モックではなく実際の API 実装をテスト(`NextResponse` 型チェック)
-- **セットアップ**: `tests/setup.ts` で `@testing-library/jest-dom` を初期化
+- **セットアップ**: `tests/unit/setup.ts` で `@testing-library/jest-dom` を初期化
 
 ## 🚀 重要な実装ノート
 
@@ -241,13 +243,13 @@ GitHub Actions には 3 つのシークレットが必要:
 
 - 既存の `ApiResponse<T>` 形式に従う
 - ハンドラーでバリデーションを追加
-- `tests/api/` ディレクトリ内に `.test.ts` ファイルでテストカバレッジを追加
+- `tests/unit/api/` ディレクトリ内に `.test.ts` ファイルでテストカバレッジを追加
 
 **新規コンポーネント**:
 
 - 必要な場合のみクライアントコンポーネント (`"use client"`) にマーク
 - サーバーコンポーネントをデフォルトのままに
-- `tests/components/` ディレクトリ内にテストファイルを配置
+- `tests/unit/components/` ディレクトリ内にテストファイルを配置
 
 ## 🔐 GitHub Secrets と CI/CD パイプライン
 

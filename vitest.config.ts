@@ -13,11 +13,9 @@ export default defineConfig({
     // グローバル変数 (describe, it など) を有効化
     globals: true,
     // テスト前に実行するセットアップファイル
-    setupFiles: "./tests/setup.ts",
-    // テスト対象ファイルのパターン (tests配下に集約)
-    include: ["tests/**/*.test.{ts,tsx}"],
-    // Playwrightのテストファイルを除外
-    exclude: ["tests/**/*.spec.{ts,tsx}", "node_modules/**"],
+    setupFiles: "./tests/unit/setup.ts",
+    // テスト対象ファイルのパターン (tests/unit配下に集約)
+    include: ["tests/unit/**/*.test.{ts,tsx}"],
   },
   resolve: {
     alias: {
