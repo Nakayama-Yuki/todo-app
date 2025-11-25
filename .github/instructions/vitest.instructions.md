@@ -17,7 +17,7 @@ This document provides authoritative guidelines for writing, structuring, and ma
 - **Vitest Version**: ^4.0.8
 - **Test Environment**: `jsdom` (browser environment emulation)
 - **TypeScript**: strict mode enabled
-- **Node.js**: 18+ (pnpm managed)
+- **Node.js**: 24+ (pnpm managed)
 
 ### Configuration File: `vitest.config.ts`
 
