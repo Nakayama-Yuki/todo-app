@@ -13,9 +13,9 @@ export default defineConfig({
     // グローバル変数 (describe, it など) を有効化
     globals: true,
     // テスト前に実行するセットアップファイル
-    setupFiles: "./src/test/setup.ts",
-    // テスト対象ファイルのパターン
-    include: ["**/*.{test,spec}.{ts,tsx}"],
+    setupFiles: "./tests/setup.ts",
+    // テスト対象ファイルのパターン（tests フォルダ内のみ）
+    include: ["tests/**/*.{test,spec}.{ts,tsx}"],
   },
   resolve: {
     alias: {

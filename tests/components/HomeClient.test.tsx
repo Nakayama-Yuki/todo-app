@@ -147,7 +147,7 @@ describe("HomeClient コンポーネント", () => {
       expect(global.fetch).not.toHaveBeenCalled();
     });
 
-    it("APIエラー时、エラーメッセージが表示される", async () => {
+    it("APIエラー時、エラーメッセージが表示される", async () => {
       const user = userEvent.setup();
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -170,7 +170,7 @@ describe("HomeClient コンポーネント", () => {
       });
     });
 
-    it("ネットワークエラー时、エラーメッセージが表示される", async () => {
+    it("ネットワークエラー時、エラーメッセージが表示される", async () => {
       const user = userEvent.setup();
 
       (global.fetch as any).mockRejectedValueOnce(new Error("Network error"));
