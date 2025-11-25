@@ -1,9 +1,15 @@
+# playwrightのE2Eテストを実行するGitHub Actionsのワークフローファイル
 name: Playwright Tests
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+    
+# セキュリティのため、必要最小限の権限のみを付与
+permissions:
+  contents: read
+
 jobs:
   test:
     timeout-minutes: 60

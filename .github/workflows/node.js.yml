@@ -5,7 +5,7 @@
 # ワークフローの名前（GitHub上で表示される）
 name: Node.js CI(pnpm)
 
-# ワークフローが実行されるタイミングを定義(pull_requestがmainブランチに対して作成されたとき)
+# ワークフローが実行されるタイミングを定義
 on:
   push:
     branches: ["main"]
