@@ -3,12 +3,10 @@ import { Todo } from "@/types/type";
 import HomeClient from "@/components/HomeClient";
 import { getDbPool } from "@/lib/db";
 
-/**
- * メモアプリのメインコンポーネント
- * Server Component でPostgreSQLDBからデータを取得する
- */
+// Cache Components ではデフォルトで動的レンダリングになる
+// データ取得は Suspense 境界内のコンポーネントで行い、ブロッキングを防ぐ
 
-// データベースからTodoリストを取得する関数
+// DB から Todo リストを取得する関数
 async function fetchTodos(): Promise<Todo[]> {
   try {
     const pool = getDbPool();
@@ -28,13 +26,26 @@ async function fetchTodos(): Promise<Todo[]> {
   }
 }
 
-// サーバーコンポーネントからクライアントコンポーネントへデータを渡す
-export default async function Home() {
+// Todo リストを取得して HomeClient に渡すコンポーネント
+async function TodosLoader() {
   const initialTodos = await fetchTodos();
+  return <HomeClient initialTodos={initialTodos} />;
+}
 
+// 読み込み中のフォールバックコンポーネント
+function LoadingFallback() {
   return (
-    <Suspense>
-      <HomeClient initialTodos={initialTodos} />
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="text-lg">読み込み中...</div>
+    </div>
+  );
+}
+
+// メインのページコンポーネント
+export default function Home() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <TodosLoader />
     </Suspense>
   );
 }
