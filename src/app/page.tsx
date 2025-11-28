@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Todo } from "@/types/type";
 import HomeClient from "@/components/HomeClient";
+import LoadingFallback from "@/components/LoadingFallback";
 import { getDbPool } from "@/lib/db";
 
 // Cache Components ではデフォルトで動的レンダリングになる
@@ -30,15 +31,6 @@ async function fetchTodos(): Promise<Todo[]> {
 async function TodosLoader() {
   const initialTodos = await fetchTodos();
   return <HomeClient initialTodos={initialTodos} />;
-}
-
-// 読み込み中のフォールバックコンポーネント
-function LoadingFallback() {
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="text-lg">読み込み中...</div>
-    </div>
-  );
 }
 
 // メインのページコンポーネント
