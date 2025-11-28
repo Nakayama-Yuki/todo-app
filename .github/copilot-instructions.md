@@ -1,4 +1,4 @@
-<!-- apply toを指定しなくても、.github直下にあるcopilot-instructions.mdはすべてのチャットに自動的に適用される -->
+<!-- .github直下にあるcopilot-instructions.mdはすべてのチャットに自動的に適用される -->
 <!-- 全体の指針になるinstructionsファイル -->
 
 # GitHub Copilot 用の Todo App ガイド
