@@ -11,9 +11,6 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-  # Pull Requestが承認されてマージキューに入ると、このワークフローが自動実行されます
-  merge_group:
-    types: [checks_requested]
 
 # セキュリティのため、必要最小限の権限のみを付与
 permissions:
