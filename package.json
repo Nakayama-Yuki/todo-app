@@ -20,7 +20,7 @@
     "postgres:logs": "docker-compose -f docker-compose.dev.yml logs postgres"
   },
   "dependencies": {
-    "next": "^16.0.7",
+    "next": "^16.0.8",
     "pg": "^8.16.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
@@ -31,14 +31,14 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.2",
     "@types/pg": "^8.15.6",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^16.0.7",
-    "jsdom": "^27.2.0",
+    "eslint-config-next": "^16.0.8",
+    "jsdom": "^27.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
