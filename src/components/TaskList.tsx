@@ -14,19 +14,34 @@ export default function TaskList({
 }: TaskListProps) {
   const [editId, setEditId] = useState<number | null>(null);
   const [editText, setEditText] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const { theme } = useTheme(); // 追加
 
   // 編集ボタンがクリックされたときの関数
   function handleEdit(id: number, currentText: string) {
     setEditId(id);
     setEditText(currentText);
+    setError(null); // エラーをクリア
   }
 
   // セーブボタンがクリックされたときの関数
-  function handleSave(id: number) {
-    updateTodo(id, editText);
-    setEditId(null);
-    setEditText("");
+  async function handleSave(id: number) {
+    setIsSaving(true);
+    setError(null);
+    
+    const success = await updateTodo(id, editText);
+    
+    setIsSaving(false);
+    
+    if (success) {
+      // 成功時のみ編集モードを終了
+      setEditId(null);
+      setEditText("");
+    } else {
+      // 失敗時はエラー表示して編集モードを継続
+      setError("保存に失敗しました。もう一度お試しください。");
+    }
   }
 
   return (
@@ -38,19 +53,26 @@ export default function TaskList({
             className="m-2"
             onChange={() => toggleTodo(todo.id)}
             checked={todo.completed}
+            disabled={editId === todo.id && isSaving}
           />
           {editId === todo.id ? (
-            <input
-              type="text"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              // テーマに応じたスタイルを適用
-              className={`border rounded p-1 ${
-                theme === "dark"
-                  ? "bg-gray-700 text-white border-gray-600"
-                  : "bg-white text-gray-800 border-gray-300"
-              }`}
-            />
+            <>
+              <input
+                type="text"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                disabled={isSaving}
+                // テーマに応じたスタイルを適用
+                className={`border rounded p-1 ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600"
+                    : "bg-white text-gray-800 border-gray-300"
+                }`}
+              />
+              {error && editId === todo.id && (
+                <span className="text-red-500 text-sm ml-2">{error}</span>
+              )}
+            </>
           ) : (
             <label
               className={`cursor-pointer ${
@@ -66,8 +88,11 @@ export default function TaskList({
           {editId === todo.id ? (
             <button
               onClick={() => handleSave(todo.id)}
-              className="bg-green-600 text-white p-1 ml-2 rounded-sm">
-              保存する
+              disabled={isSaving}
+              className={`bg-green-600 text-white p-1 ml-2 rounded-sm ${
+                isSaving ? "opacity-50 cursor-not-allowed" : ""
+              }`}>
+              {isSaving ? "保存中..." : "保存する"}
             </button>
           ) : (
             <button
@@ -78,7 +103,10 @@ export default function TaskList({
           )}
           <button
             onClick={() => deleteTodo(todo.id)}
-            className="bg-red-600 text-white p-1 ml-2 rounded-sm">
+            disabled={editId === todo.id && isSaving}
+            className={`bg-red-600 text-white p-1 ml-2 rounded-sm ${
+              editId === todo.id && isSaving ? "opacity-50 cursor-not-allowed" : ""
+            }`}>
             消す
           </button>
         </li>

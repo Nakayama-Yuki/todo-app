@@ -10,7 +10,7 @@ export interface TaskListProps {
   todos: Todo[];
   toggleTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
-  updateTodo: (id: number, newText: string) => void;
+  updateTodo: (id: number, newText: string) => Promise<boolean>;
 }
 
 export interface AddTaskProps {

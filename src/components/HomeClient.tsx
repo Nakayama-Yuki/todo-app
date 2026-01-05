@@ -108,9 +108,10 @@ export default function HomeClient({ initialTodos }: HomeClientProps) {
 
   /**
    * Todoのテキストを更新する関数
+   * @returns 成功時はtrue、失敗時はfalse
    */
-  async function updateTodo(id: number, newText: string): Promise<void> {
-    if (newText.trim() === "") return;
+  async function updateTodo(id: number, newText: string): Promise<boolean> {
+    if (newText.trim() === "") return false;
 
     try {
       const response = await fetch(`/api/todos/${id}`, {
@@ -128,12 +129,15 @@ export default function HomeClient({ initialTodos }: HomeClientProps) {
         setTodos((prevTodos) =>
           prevTodos.map((t) => (t.id === id ? result.data! : t))
         );
+        return true;
       } else {
         setError(result.error || "Failed to update todo");
+        return false;
       }
     } catch (error) {
       console.error("Error updating todo:", error);
       setError("Todoの更新に失敗しました");
+      return false;
     }
   }
 
