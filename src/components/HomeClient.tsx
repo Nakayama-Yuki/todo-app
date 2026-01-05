@@ -72,7 +72,7 @@ export default function HomeClient({ initialTodos }: HomeClientProps) {
       if (result.success && result.data) {
         // ローカル状態を更新
         setTodos((prevTodos) =>
-          prevTodos.map((t) => (t.id === id ? result.data! : t))
+          prevTodos.map((t) => (t.id === id ? result.data! : t)),
         );
       } else {
         setError(result.error || "Failed to toggle todo");
@@ -127,7 +127,7 @@ export default function HomeClient({ initialTodos }: HomeClientProps) {
       if (result.success && result.data) {
         // ローカル状態を更新
         setTodos((prevTodos) =>
-          prevTodos.map((t) => (t.id === id ? result.data! : t))
+          prevTodos.map((t) => (t.id === id ? result.data! : t)),
         );
         return true;
       } else {
@@ -145,25 +145,28 @@ export default function HomeClient({ initialTodos }: HomeClientProps) {
     <div
       className={`container mx-auto p-4 min-h-screen ${
         theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
-      }`}>
+      }`}
+    >
       <h1 className="text-2xl font-bold mb-4">メモアプリ (PostgreSQL版)</h1>
 
       {/* エラー表示 */}
       {error && (
         <div
           className={`mb-4 p-4 rounded border ${
-            theme === "dark"
-              ? "bg-red-900 border-red-700 text-red-100"
-              : "bg-red-100 border-red-400 text-red-800"
-          }`}>
+            theme === "dark" ?
+              "bg-red-900 border-red-700 text-red-100"
+            : "bg-red-100 border-red-400 text-red-800"
+          }`}
+        >
           {error}
           <button
             onClick={() => setError(null)}
             className={`ml-2 ${
-              theme === "dark"
-                ? "text-red-200 hover:text-red-100"
-                : "text-red-600 hover:text-red-700"
-            }`}>
+              theme === "dark" ?
+                "text-red-200 hover:text-red-100"
+              : "text-red-600 hover:text-red-700"
+            }`}
+          >
             ×
           </button>
         </div>

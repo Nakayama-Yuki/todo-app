@@ -29,11 +29,11 @@ export default function TaskList({
   async function handleSave(id: number) {
     setIsSaving(true);
     setError(null);
-    
+
     const success = await updateTodo(id, editText);
-    
+
     setIsSaving(false);
-    
+
     if (success) {
       // 成功時のみ編集モードを終了
       setEditId(null);
@@ -55,7 +55,7 @@ export default function TaskList({
             checked={todo.completed}
             disabled={editId === todo.id && isSaving}
           />
-          {editId === todo.id ? (
+          {editId === todo.id ?
             <>
               <input
                 type="text"
@@ -64,49 +64,51 @@ export default function TaskList({
                 disabled={isSaving}
                 // テーマに応じたスタイルを適用
                 className={`border rounded p-1 ${
-                  theme === "dark"
-                    ? "bg-gray-700 text-white border-gray-600"
-                    : "bg-white text-gray-800 border-gray-300"
+                  theme === "dark" ?
+                    "bg-gray-700 text-white border-gray-600"
+                  : "bg-white text-gray-800 border-gray-300"
                 }`}
               />
               {error && editId === todo.id && (
                 <span className="text-red-500 text-sm ml-2">{error}</span>
               )}
             </>
-          ) : (
-            <label
+          : <label
               className={`cursor-pointer ${
-                todo.completed
-                  ? "line-through text-gray-500"
-                  : theme === "dark"
-                  ? "text-white"
-                  : "text-black"
-              }`}>
+                todo.completed ? "line-through text-gray-500"
+                : theme === "dark" ? "text-white"
+                : "text-black"
+              }`}
+            >
               {todo.text}
             </label>
-          )}
-          {editId === todo.id ? (
+          }
+          {editId === todo.id ?
             <button
               onClick={() => handleSave(todo.id)}
               disabled={isSaving}
               className={`bg-green-600 text-white p-1 ml-2 rounded-sm ${
                 isSaving ? "opacity-50 cursor-not-allowed" : ""
-              }`}>
+              }`}
+            >
               {isSaving ? "保存中..." : "保存する"}
             </button>
-          ) : (
-            <button
+          : <button
               onClick={() => handleEdit(todo.id, todo.text)}
-              className="bg-yellow-600 text-white p-1 ml-2 rounded-sm">
+              className="bg-yellow-600 text-white p-1 ml-2 rounded-sm"
+            >
               編集
             </button>
-          )}
+          }
           <button
             onClick={() => deleteTodo(todo.id)}
             disabled={editId === todo.id && isSaving}
             className={`bg-red-600 text-white p-1 ml-2 rounded-sm ${
-              editId === todo.id && isSaving ? "opacity-50 cursor-not-allowed" : ""
-            }`}>
+              editId === todo.id && isSaving ?
+                "opacity-50 cursor-not-allowed"
+              : ""
+            }`}
+          >
             消す
           </button>
         </li>
