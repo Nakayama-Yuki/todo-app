@@ -7,6 +7,7 @@ Next.js 16 + React 19 + PostgreSQL を使用した Todo アプリケーション
 - **Frontend**: Next.js 16, React 19, TypeScript 5, Tailwind CSS v4
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL 17 (Docker)
+- **Testing**: Playwright
 - **Package Manager**: pnpm
 
 ## 環境変数の設定について
@@ -81,23 +82,23 @@ pnpm run prod:logs         # 本番（アプリ+DB）
 ## テスト
 
 ```bash
-# テストを実行（ウォッチモード）
+# テストを実行
 pnpm test
 
-# 1回だけ実行
-pnpm test --run
+# テストを UI モードで実行
+pnpm test:ui
+
+# テストをヘッドレスモードで実行
+pnpm test:headless
 ```
 
 ### テストの構成
 
-- **API テスト**: `/src/app/api/todos/route.test.ts`
-  - 全ての CRUD エンドポイントのテスト
-  - バリデーションとエラーハンドリングのテスト
-- **コンポーネントテスト**:
-  - `AddTask.test.tsx` - Todo 追加フォーム
-  - `TaskList.test.tsx` - Todo リストの表示・編集・削除
-  - `ChangeTheme.test.tsx` - テーマ切り替え機能
-- **ユニットテスト**: `db.test.ts` - データベース接続のシングルトンパターン
+- **E2E テスト**: `tests/example.spec.ts`
+  - ブラウザ上での実際のユーザー操作をシミュレート
+  - Todo の追加、編集、削除、完了状態の切り替えなどの統合テスト
+  - テーマ切り替えなどの UI インタラクションテスト
+  - Playwright による複数ブラウザでのクロスブラウザテスト対応
 
 ## データベース管理コマンド
 
@@ -166,10 +167,10 @@ todo-app/
 │   │   └── themeContext.tsx    # テーマコンテキスト
 │   ├── lib/
 │   │   └── db.ts              # データベース接続
-│   ├── test/
-│   │   └── setup.ts           # テスト設定
 │   └── types/
 │       └── type.ts            # TypeScript型定義
+├── tests/
+│   └── example.spec.ts        # Playwright E2Eテスト
 ├── docker-compose.dev.yml     # 開発: PostgreSQLのみDockerで起動
 ├── docker-compose.prod.yml    # 本番: Next.js + PostgreSQL をDockerで起動
 ├── Dockerfile                 # Docker ビルド設定
@@ -178,7 +179,7 @@ todo-app/
 ├── .env.local.example         # 環境変数テンプレート
 ├── next.config.mjs            # Next.js 設定
 ├── tsconfig.json              # TypeScript 設定
-├── vitest.config.ts           # Vitest 設定
+├── playwright.config.ts       # Playwright 設定
 └── package.json
 ```
 
@@ -219,7 +220,6 @@ pnpm start
 **ビルド時と実行時の環境変数：**
 
 1. **ビルド時の環境変数**：
-
    - Dockerfile で `ARG` として定義
    - `docker-compose.yml` の `build.args` で渡す
    - ビルド中にのみ使用され、最終イメージには含まれない
