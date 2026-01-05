@@ -12,7 +12,7 @@
 - **フロントエンド**: Next.js 16 (App Router)、React 19、TypeScript 5、Tailwind CSS v4
 - **バックエンド**: Next.js API Routes (`/app/api/todos/`)
 - **データベース**: PostgreSQL 17 (Docker)
-- **テスト**: Vitest + React Testing Library
+- **テスト**: Playwright
 - **パッケージマネージャー**: pnpm
 
 ### データフロー
@@ -32,17 +32,7 @@
 
 ```
 tests/              # プロジェクト直下のテストフォルダ
-  setup.ts          # Vitest 設定
-  api/
-    todos/
-      route.test.ts # API ルートテスト
-  components/       # コンポーネントテスト
-    AddTask.test.tsx
-    ChangeTheme.test.tsx
-    HomeClient.test.tsx
-    TaskList.test.tsx
-  lib/
-    db.test.ts      # データベース接続テスト
+  example.spec.ts   # Playwright E2Eテスト
 src/
   app/              # Next.js App Router (デフォルトではサーバー側でレンダリング)
     page.tsx        # サーバーコンポーネント - 初期 Todo を取得
@@ -79,11 +69,14 @@ pnpm run docker:dev
 # Next.js 開発サーバーを起動 (ホットリロード)
 pnpm dev
 
-# テストを実行 (ウォッチモード)
+# テストを実行
 pnpm test
 
-# テストを 1 回実行
-pnpm test --run
+# テストを UI モードで実行
+pnpm test:ui
+
+# テストをヘッドレスモードで実行
+pnpm test:headless
 
 # コード品質チェック
 pnpm lint
@@ -133,30 +126,34 @@ pnpm lint
 
 ### ファイル配置と実行
 
-- **単体テスト**: プロジェクト直下の `tests/` フォルダに配置
-- **構造**: ソースの構造を反映（例: `tests/components/`、`tests/api/todos/`、`tests/lib/`）
-- **例**: `tests/components/AddTask.test.tsx`、`tests/api/todos/route.test.ts`、`tests/lib/db.test.ts`
-- **テストランナー**: Vitest（jsdom 環境、React Testing Library 使用）
-- **設定**: `vitest.config.ts` に基づく（tsconfig パス エイリアス `@` 対応）
+- **E2E テスト**: プロジェクト直下の `tests/` フォルダに配置
+- **ファイル命名**: `*.spec.ts` パターン（例: `example.spec.ts`）
+- **テストランナー**: Playwright（実際のブラウザを使用）
+- **設定**: `playwright.config.ts` に基づく
 
 ### テストカバレッジと戦略
 
-- **API ルート** (`route.ts`): CRUD 操作、バリデーション、エラーケース、HTTP ステータス
-- **コンポーネント** (`HomeClient.tsx`, `TaskList.tsx`, `AddTask.tsx`): ユーザー操作、プロップ検証、状態更新
-- **データベース** (`db.ts`): シングルトン プール動作、エラーハンドリング
+- **E2E テスト** (`example.spec.ts`): ブラウザ上での実際のユーザー操作をシミュレート
+  - Todo の追加、編集、削除、完了状態の切り替え
+  - テーマ切り替えなどの UI インタラクション
+  - 複数ブラウザでのクロスブラウザテスト（Chromium、Firefox、WebKit）
+- **統合テスト**: フロントエンドから API、データベースまでの完全なフローをテスト
+- **視覚的回帰テスト**: スクリーンショット比較による UI の一貫性検証（オプション）
 
 ### テスト実行コマンド
 
 ```bash
-pnpm test              # ウォッチモード（開発中）
-pnpm test --run        # シングルラン + カバレッジ（CI/CD）
+pnpm test              # テストを実行
+pnpm test:ui           # UI モードでテストを実行（対話的）
+pnpm test:headless     # ヘッドレスモードでテストを実行（CI/CD）
 ```
 
 ### テスト環境の特性
 
-- **jsdom**: ブラウザ環境をエミュレート（DOM API テスト用）
-- **API テスト**: モックではなく実際の API 実装をテスト（`NextResponse` 型チェック）
-- **セットアップ**: `tests/setup.ts` で `@testing-library/jest-dom` を初期化
+- **実ブラウザ**: Chromium、Firefox、WebKit での実際のブラウザテスト
+- **完全統合**: モックなし、実際の API とデータベースを使用
+- **自動待機**: Playwright の自動待機機能により安定したテスト実行
+- **デバッグ**: UI モードでのステップ実行とインスペクション機能
 
 ## 🚀 重要な実装ノート
 
@@ -220,7 +217,7 @@ GitHub Actions には 3 つのシークレットが必要:
 
 1. 類似パターンが既に存在するか確認 (例: `route.ts` の API エンドポイント)
 2. コンポーネント構成を確認 (サーバー/クライアント分割)
-3. テスト実行: `pnpm test --run`
+3. テスト実行: `pnpm test:headless`
 
 **データベース変更**:
 
@@ -237,7 +234,7 @@ GitHub Actions には 3 つのシークレットが必要:
 
 - 必要な場合のみクライアントコンポーネント (`"use client"`) にマーク
 - サーバーコンポーネントをデフォルトのままに
-- テストは `tests/components/` フォルダに配置
+- E2E テストは `tests/` フォルダに `.spec.ts` ファイルとして配置
 
 ## 🔐 GitHub Secrets と CI/CD パイプライン
 
@@ -251,7 +248,7 @@ GitHub Actions には 3 つのシークレットが必要:
 
 - **トリガー**: main ブランチへの push / PR / merge_group
 - **Service Containers**: PostgreSQL 17-alpine を起動（テスト実行中）
-- **テスト**: `pnpm test --run` でカバレッジ検証
+- **テスト**: `pnpm test:headless` で E2E テスト実行
 - **リント**: `pnpm lint` でコード品質チェック
 - **ビルド**: `pnpm build` で Next.js ビルド検証
 - **Secrets**: Settings → Secrets and variables → Actions で `POSTGRES_DB`、`POSTGRES_USER`、`POSTGRES_PASSWORD` を設定
