@@ -57,6 +57,10 @@ export default function TaskList({
           />
           {editId === todo.id ?
             <>
+              {/* 編集中でもテキストを DOM 上に保持してロケーターが途切れないようにする */}
+              <span className="sr-only" aria-hidden>
+                {todo.text}
+              </span>
               <input
                 type="text"
                 value={editText}
