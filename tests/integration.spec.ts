@@ -54,8 +54,8 @@ test.describe("Integration Tests", () => {
     await expect(checkbox).toBeChecked();
 
     // 完了状態のスタイルを確認
-    const todoLabel = item.locator("label");
-    const hasLineThrough = await todoLabel.evaluate((el) => {
+    const todoLabelAfterComplete = item.locator("label");
+    const hasLineThrough = await todoLabelAfterComplete.evaluate((el) => {
       const style = window.getComputedStyle(el);
       return style.textDecoration.includes("line-through");
     });
@@ -65,6 +65,8 @@ test.describe("Integration Tests", () => {
     const finalText = `${todoText} - final edit`;
     item = await editTodo(page, item, finalText);
     await expect(item).toContainText("- final edit");
+    const todoLabelAfterEdit = item.locator("label");
+    await expect(todoLabelAfterEdit).toBeVisible();
 
     // チェック状態が維持されていることを確認（編集後も完了状態を保持）
     const checkboxAfterEdit = item.getByRole("checkbox");
@@ -75,7 +77,7 @@ test.describe("Integration Tests", () => {
     await expect(checkboxAfterEdit).not.toBeChecked();
 
     // line-through が解除されることを確認
-    const noLineThrough = await todoLabel.evaluate((el) => {
+    const noLineThrough = await todoLabelAfterEdit.evaluate((el) => {
       const style = window.getComputedStyle(el);
       return !style.textDecoration.includes("line-through");
     });
