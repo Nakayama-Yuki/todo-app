@@ -5,7 +5,10 @@ import { Todo, ApiResponse, UpdateTodoRequest } from "@/types/type";
 /**
  * PUT /api/todos/[id] - Todoを更新
  */
-export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }): Promise<NextResponse<ApiResponse<Todo>>> {
+export async function PUT(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+): Promise<NextResponse<ApiResponse<Todo>>> {
   const params = await props.params;
   try {
     const todoId = parseInt(params.id);
@@ -17,7 +20,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
           success: false,
           error: "Invalid todo ID",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -27,7 +30,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
     // 既存のTodoをチェック
     const existingResult = await pool.query(
       "SELECT id FROM todos WHERE id = $1",
-      [todoId]
+      [todoId],
     );
 
     if (existingResult.rows.length === 0) {
@@ -36,13 +39,13 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
           success: false,
           error: "Todo not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // 更新クエリを動的に構築
     const updateFields: string[] = [];
-    const updateValues: any[] = [];
+    const updateValues: (string | number | boolean)[] = [];
     let paramIndex = 1;
 
     if (body.text !== undefined) {
@@ -82,7 +85,7 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
         success: false,
         error: "Failed to update todo",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -90,7 +93,10 @@ export async function PUT(request: NextRequest, props: { params: Promise<{ id: s
 /**
  * DELETE /api/todos/[id] - Todoを削除
  */
-export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }): Promise<NextResponse<ApiResponse<null>>> {
+export async function DELETE(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+): Promise<NextResponse<ApiResponse<null>>> {
   const params = await props.params;
   try {
     const todoId = parseInt(params.id);
@@ -102,7 +108,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
           success: false,
           error: "Invalid todo ID",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +117,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
     // Todoを削除
     const result = await pool.query(
       "DELETE FROM todos WHERE id = $1 RETURNING id",
-      [todoId]
+      [todoId],
     );
 
     if (result.rows.length === 0) {
@@ -120,7 +126,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
           success: false,
           error: "Todo not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -135,7 +141,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
         success: false,
         error: "Failed to delete todo",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
