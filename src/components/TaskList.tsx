@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Todo, TaskListProps } from "@/types/type";
+import { TaskListProps } from "@/types/type";
 import { useTheme } from "@/context/themeContext"; // 追加
 
 /**
